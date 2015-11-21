@@ -1,0 +1,10 @@
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/classes/debug
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-882b1cd2d7e2e9663fae98191d7e24ad8df9b208.jar
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-e497a534f8e7867192e4ba22d98dd84806bc3d5f.jar
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/pre-dexed/debug/classes-401041cfbbbaf6f944c790584bcf49f61b3f997e.jar
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/pre-dexed/debug/classes-09ec2254daee0f43f6506cd50687491fa6f5ff08.jar
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-e7c87a35e39817b0e9ea51659c029de6529ca2c3.jar
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/pre-dexed/debug/classes-3f2812e9deb16f60845aed441e99ea7926a1f89b.jar
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/pre-dexed/debug/classes-f2be6f0c8cecce880d5cb6a3aae813b19b277c44.jar
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/pre-dexed/debug/classes-9e3f93305792ebb5e2429735e189c9eff7013fe2.jar
+/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/pre-dexed/debug/classes-0c7ba1a9218a09d49033a9464a13ec24200ad27c.jar

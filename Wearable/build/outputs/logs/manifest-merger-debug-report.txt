@@ -1,0 +1,117 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:17:1-65:12
+	package
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:18:9-57
+	android:versionName
+		INJECTED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml
+		INJECTED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:17:11-69
+	android:versionCode
+		INJECTED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml
+		INJECTED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml
+uses-sdk
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:20:5-21:41
+MERGED from [com.google.android.gms:play-services-wearable:8.3.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.google.android.gms/play-services-wearable/8.3.0/AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-base:8.3.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.3.0/AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-basement:8.3.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.3.0/AndroidManifest.xml:18:5-42
+MERGED from [com.android.support:support-v4:22.2.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v13:21.0.3] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v13/21.0.3/AndroidManifest.xml:15:5-43
+MERGED from [com.android.support:support-v4:22.2.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/AndroidManifest.xml:20:5-43
+MERGED from [com.google.android.support:wearable:1.1.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.google.android.support/wearable/1.1.0/AndroidManifest.xml:6:5-8:41
+MERGED from [com.android.support:support-v4:22.2.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:recyclerview-v7:21.0.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/21.0.0/AndroidManifest.xml:15:5-42
+MERGED from [com.android.support:support-v4:22.2.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/AndroidManifest.xml:20:5-43
+	android:targetSdkVersion
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:21:9-38
+	android:minSdkVersion
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:20:15-41
+uses-feature#android.hardware.type.watch
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:23:5-64
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:23:19-61
+uses-permission#com.google.android.permission.PROVIDE_BACKGROUND
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:26:5-88
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:26:22-85
+uses-permission#android.permission.WAKE_LOCK
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:27:5-68
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:27:22-65
+uses-permission#android.permission.READ_CALENDAR
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:30:5-72
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:30:22-69
+application
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:32:5-63:19
+MERGED from [com.google.android.gms:play-services-wearable:8.3.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.google.android.gms/play-services-wearable/8.3.0/AndroidManifest.xml:19:5-20
+MERGED from [com.google.android.gms:play-services-basement:8.3.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.3.0/AndroidManifest.xml:20:5-24:19
+MERGED from [com.android.support:support-v4:22.2.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v13:21.0.3] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v13/21.0.3/AndroidManifest.xml:16:5-19
+MERGED from [com.android.support:support-v4:22.2.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.support:wearable:1.1.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.google.android.support/wearable/1.1.0/AndroidManifest.xml:10:5-20
+MERGED from [com.android.support:support-v4:22.2.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:recyclerview-v7:21.0.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/21.0.0/AndroidManifest.xml:17:5-19:19
+MERGED from [com.android.support:support-v4:22.2.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/AndroidManifest.xml:22:5-20
+	android:label
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:35:13-45
+	android:allowBackup
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:33:13-39
+	android:icon
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:34:13-49
+service#com.example.android.wearable.watchface.PieWatchFaceService
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:37:9-57:19
+	android:label
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:39:13-45
+	android:permission
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:40:13-67
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:38:13-48
+meta-data#android.service.wallpaper
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:41:13-43:54
+	android:resource
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:43:17-51
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:42:17-57
+meta-data#com.google.android.wearable.watchface.preview
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:44:13-46:63
+	android:resource
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:46:17-60
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:45:17-77
+meta-data#com.google.android.wearable.watchface.preview_circular
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:47:13-49:72
+	android:resource
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:49:17-69
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:48:17-86
+meta-data#com.google.android.wearable.watchface.companionConfigurationAction
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:50:13-52:88
+	android:value
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:52:17-85
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:51:17-98
+intent-filter#android.service.wallpaper.WallpaperService+com.google.android.wearable.watchface.category.WATCH_FACE
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:53:13-56:29
+action#android.service.wallpaper.WallpaperService
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:54:17-85
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:54:25-82
+category#com.google.android.wearable.watchface.category.WATCH_FACE
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:55:17-102
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:55:27-99
+meta-data#com.google.android.gms.version
+ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:59:9-61:73
+MERGED from [com.google.android.gms:play-services-basement:8.3.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.3.0/AndroidManifest.xml:21:9-23:69
+	android:value
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:61:17-70
+	android:name
+		ADDED from /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/AndroidManifest.xml:60:17-62
+activity#android.support.v7.widget.TestActivity
+ADDED from [com.android.support:recyclerview-v7:21.0.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/21.0.0/AndroidManifest.xml:18:9-115
+	android:label
+		ADDED from [com.android.support:recyclerview-v7:21.0.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/21.0.0/AndroidManifest.xml:18:19-59
+	android:name
+		ADDED from [com.android.support:recyclerview-v7:21.0.0] /Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/21.0.0/AndroidManifest.xml:18:60-113

@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/build/intermediates/res/merged/debug/xml/watch_face.xml",
+        "source": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Wearable/src/main/res/xml/watch_face.xml"
+    },
+    {
+        "merged": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/build/intermediates/res/merged/debug/xml/watch_face.xml",
+        "source": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Wearable/src/main/res/xml/watch_face.xml"
+    }
+]

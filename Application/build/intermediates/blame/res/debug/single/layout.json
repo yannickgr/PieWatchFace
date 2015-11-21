@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Application/build/intermediates/res/merged/debug/layout/activity_tilt_watch_face_config.xml",
+        "source": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Application/src/main/res/layout/activity_tilt_watch_face_config.xml"
+    },
+    {
+        "merged": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Application/build/intermediates/res/merged/debug/layout/activity_tilt_watch_face_config.xml",
+        "source": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Application/src/main/res/layout/activity_tilt_watch_face_config.xml"
+    },
+    {
+        "merged": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Application/build/intermediates/res/merged/debug/layout/activity_digital_watch_face_config.xml",
+        "source": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Application/src/main/res/layout/activity_digital_watch_face_config.xml"
+    },
+    {
+        "merged": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Application/build/intermediates/res/merged/debug/layout/activity_digital_watch_face_config.xml",
+        "source": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Application/src/main/res/layout/activity_digital_watch_face_config.xml"
+    },
+    {
+        "merged": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Application/build/intermediates/res/merged/debug/layout/activity_analog_watch_face_config.xml",
+        "source": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/WatchFaceExample/Application/src/main/res/layout/activity_analog_watch_face_config.xml"
+    },
+    {
+        "merged": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Application/build/intermediates/res/merged/debug/layout/activity_analog_watch_face_config.xml",
+        "source": "/Users/yannickgrossard/Dropbox/Projects/AndroidStudioProjects/PieWatchFace/Application/src/main/res/layout/activity_analog_watch_face_config.xml"
+    }
+]
