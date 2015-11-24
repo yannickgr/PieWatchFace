@@ -32,7 +32,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.SurfaceHolder;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,8 +53,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
     private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1);
 
 
-    private class CalendarEvent
-    {
+    private class CalendarEvent {
         public long CalendarId;
         public String Title;
         public Date Start;
@@ -67,6 +65,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
 
         /**
          * This class contains the info we need on a calendar event, combined with some helpers classes
+         *
          * @param calendarId
          * @param title
          * @param start
@@ -79,8 +78,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
         public CalendarEvent(long calendarId,
                              String title, Date start, Date end, int duration,
                              String location, boolean allDay,
-                             int color)
-        {
+                             int color) {
             this.CalendarId = calendarId;
             this.Title = title;
             this.Start = start;
@@ -91,18 +89,15 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             this.Color = color;
         }
 
-        public float getStartAngle(boolean takeArcDrawingOffsetIntoAccount)
-        {
+        public float getStartAngle(boolean takeArcDrawingOffsetIntoAccount) {
             return getAngleForDate(this.Start, takeArcDrawingOffsetIntoAccount);
         }
 
-        public float getEndAngle(boolean takeArcDrawingOffsetIntoAccount)
-        {
+        public float getEndAngle(boolean takeArcDrawingOffsetIntoAccount) {
             return getAngleForDate(this.End, takeArcDrawingOffsetIntoAccount);
         }
 
-        public float getDurationInDegrees()
-        {
+        public float getDurationInDegrees() {
             return getDegreesForMinutes(((this.End.getHours() * 60) + this.End.getMinutes()) -
                     ((this.Start.getHours() * 60) + this.Start.getMinutes()));
         }
@@ -110,32 +105,31 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
 
     /**
      * For any angle of the circle given, get the coordinates of its point on the circumference
+     *
      * @param radius
      * @param angle
      * @param centreX
      * @param centreY
      * @return
      */
-    public Point getPointOnTheCircleCircumference(double radius, double angle, float centreX, float centreY)
-    {
-        int y = (int)Math.round(centreY + radius * Math.sin(angle * Math.PI / 180f));
-        int x = (int)Math.round(centreX + radius * Math.cos(angle * Math.PI / 180f));
+    public Point getPointOnTheCircleCircumference(double radius, double angle, float centreX, float centreY) {
+        int y = (int) Math.round(centreY + radius * Math.sin(angle * Math.PI / 180f));
+        int x = (int) Math.round(centreX + radius * Math.cos(angle * Math.PI / 180f));
 
         return new Point(x, y);
     }
 
     /**
      * Transform a given date to minutes, removing the difference for AM and PM
+     *
      * @param date
      * @return
      */
-    public int getDateInMinutes(Date date)
-    {
+    public int getDateInMinutes(Date date) {
         int minutes = date.getMinutes();
         int hours = date.getHours();
 
-        if (hours > 12)
-        {
+        if (hours > 12) {
             hours = hours - 12;
         }
         minutes = minutes + (hours * 60);
@@ -143,19 +137,16 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
         return minutes;
     }
 
-    private float getDegreesForMinutes(int minutes)
-    {
+    private float getDegreesForMinutes(int minutes) {
         return minutes * 0.5f;
     }
 
-    private float getAngleForDate(Date date, boolean takeArcDrawingOffsetIntoAccount)
-    {
+    private float getAngleForDate(Date date, boolean takeArcDrawingOffsetIntoAccount) {
         int minutes = getDateInMinutes(date);
         return this.getAngleForDate(minutes, takeArcDrawingOffsetIntoAccount);
     }
 
-    private float getAngleForDate(int minutes, boolean takeArcDrawingOffsetIntoAccount)
-    {
+    private float getAngleForDate(int minutes, boolean takeArcDrawingOffsetIntoAccount) {
         // get the angle starting from the top (12 o clock)
         float startAngle = this.getDegreesForMinutes(minutes);
 
@@ -175,8 +166,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
         return startAngle;
     }
 
-    public float getPixelsForDips(float dips)
-    {
+    public float getPixelsForDips(float dips) {
         Resources r = getResources();
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, r.getDisplayMetrics());
 
@@ -311,7 +301,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             // This load should move to a separate async function
             // Projection array. Creating indices for this array instead of doing
             // dynamic lookups improves performance.
-            final String[] EVENT_PROJECTION = new String[] {
+            final String[] EVENT_PROJECTION = new String[]{
                     CalendarContract.Calendars._ID,                     // 0
                     CalendarContract.Calendars.ACCOUNT_NAME,            // 1
                     CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,   // 2
@@ -377,27 +367,52 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             }
 
             // Adding a bunch of hard-coded dummy events, to not always have to add events manually in the android calendar
-            Calendar start = new GregorianCalendar(); Calendar end = new GregorianCalendar();
+            Calendar start = new GregorianCalendar();
+            Calendar end = new GregorianCalendar();
 
             /*start.set(Calendar.HOUR_OF_DAY, 6); start.set(Calendar.MINUTE, 0); start.set(Calendar.SECOND, 0);
             end.set(Calendar.HOUR_OF_DAY, 7); end.set(Calendar.MINUTE, 0); end.set(Calendar.SECOND, 0);
             events.add(new CalendarEvent(1, "Running", start.getTime(), end.getTime(), 0, "Outside", false, Color.BLUE));*/
 
-            start.set(Calendar.HOUR_OF_DAY, 12); start.set(Calendar.MINUTE, 0); start.set(Calendar.SECOND, 0);
-            end.set(Calendar.HOUR_OF_DAY, 13); end.set(Calendar.MINUTE, 30); end.set(Calendar.SECOND, 0);
+            start.set(Calendar.HOUR_OF_DAY, 12);
+            start.set(Calendar.MINUTE, 0);
+            start.set(Calendar.SECOND, 0);
+            end.set(Calendar.HOUR_OF_DAY, 13);
+            end.set(Calendar.MINUTE, 30);
+            end.set(Calendar.SECOND, 0);
             events.add(new CalendarEvent(1, "Lunch", start.getTime(), end.getTime(), 0, "Chipotle", false, Color.parseColor("#009688")));
 
-            start.set(Calendar.HOUR_OF_DAY, 14); start.set(Calendar.MINUTE, 0); start.set(Calendar.SECOND, 0);
-            end.set(Calendar.HOUR_OF_DAY, 15); end.set(Calendar.MINUTE, 0); end.set(Calendar.SECOND, 0);
+            start.set(Calendar.HOUR_OF_DAY, 14);
+            start.set(Calendar.MINUTE, 0);
+            start.set(Calendar.SECOND, 0);
+            end.set(Calendar.HOUR_OF_DAY, 15);
+            end.set(Calendar.MINUTE, 0);
+            end.set(Calendar.SECOND, 0);
             events.add(new CalendarEvent(1, "Conf.call", start.getTime(), end.getTime(), 0, "Room A1", false, Color.parseColor("#2196F3")));
 
-            start.set(Calendar.HOUR_OF_DAY, 15); start.set(Calendar.MINUTE, 30); start.set(Calendar.SECOND, 0);
-            end.set(Calendar.HOUR_OF_DAY, 16); end.set(Calendar.MINUTE, 30); end.set(Calendar.SECOND, 0);
+            start.set(Calendar.HOUR_OF_DAY, 15);
+            start.set(Calendar.MINUTE, 30);
+            start.set(Calendar.SECOND, 0);
+            end.set(Calendar.HOUR_OF_DAY, 16);
+            end.set(Calendar.MINUTE, 30);
+            end.set(Calendar.SECOND, 0);
             events.add(new CalendarEvent(1, "Evaluation", start.getTime(), end.getTime(), 0, "Room B1", false, Color.parseColor("#2196F3")));
 
-            start.set(Calendar.HOUR_OF_DAY, 18); start.set(Calendar.MINUTE, 0); start.set(Calendar.SECOND, 0);
-            end.set(Calendar.HOUR_OF_DAY, 20); end.set(Calendar.MINUTE, 0); end.set(Calendar.SECOND, 0);
+            start.set(Calendar.HOUR_OF_DAY, 18);
+            start.set(Calendar.MINUTE, 0);
+            start.set(Calendar.SECOND, 0);
+            end.set(Calendar.HOUR_OF_DAY, 20);
+            end.set(Calendar.MINUTE, 0);
+            end.set(Calendar.SECOND, 0);
             events.add(new CalendarEvent(1, "Dinner w Amy", start.getTime(), end.getTime(), 0, "La Place", false, Color.parseColor("#009688")));
+
+            start.set(Calendar.HOUR_OF_DAY, 21);
+            start.set(Calendar.MINUTE, 0);
+            start.set(Calendar.SECOND, 0);
+            end.set(Calendar.HOUR_OF_DAY, 23);
+            end.set(Calendar.MINUTE, 30);
+            end.set(Calendar.SECOND, 0);
+            events.add(new CalendarEvent(1, "Skype call", start.getTime(), end.getTime(), 0, "La Place", false, Color.parseColor("#ee6161")));
 
             // for easy use, the primary positions of the dial
             final int DIAL_12_OCLOCK = 270;
@@ -411,8 +426,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
 
             // looping through the stored events
             Iterator<CalendarEvent> iterator = events.iterator();
-            while(iterator.hasNext())
-            {
+            while (iterator.hasNext()) {
                 CalendarEvent event = iterator.next();
                 /*Log.d(TAG, "--NEXT EVENT");
                 Log.d(TAG, "Title: " + event.Title);
@@ -422,12 +436,9 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
                 Log.d(TAG, "All day: " + event.AllDay);
                 Log.d(TAG, "Color: " + event.Color);*/
 
-                if (event.AllDay)
-                {
+                if (event.AllDay) {
                     //TODO: These should be added just behind the current time indicator, and be "dragged along" for the rest of the day. The downside is we lose some of our events horizon.
-                }
-                else
-                {
+                } else {
                     int startMinutes = getDateInMinutes(event.Start);
                     int endMinutes = getDateInMinutes(event.End);
                     float endAngle = event.getEndAngle(true);
@@ -436,8 +447,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
 
                     if (nowMinutes > startMinutes &&
                             nowMinutes < endMinutes &&
-                        baselineAngle == nowAngle)
-                    {
+                            baselineAngle == nowAngle) {
                         // we are currently in progress of this event, use the start as baseline
                         baselineAngle = startAngle;
                     }
@@ -460,35 +470,30 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
                                 (startAngle >= DIAL_3_OCLOCK && startAngle < DIAL_6_OCLOCK)
                         )
                         &&*/
-                        (
-                                endAngle <= DIAL_6_OCLOCK ||
-                                (endAngle <= DIAL_3_OCLOCK_ALT && endAngle > DIAL_12_OCLOCK)
-                        )
-                       )
-                    {
+                            (
+                                    endAngle <= DIAL_6_OCLOCK ||
+                                            (endAngle <= DIAL_3_OCLOCK_ALT && endAngle > DIAL_12_OCLOCK)
+                            )
+                            ) {
                         // draw the text at the end of the slice
                         mTextPaint.setTextAlign(Paint.Align.RIGHT);
                         path.moveTo(centerX, centerY);
                         path.lineTo(endPoint.x, endPoint.y);
                         vOffset = getPixelsForDips(-5);
                         hOffset = getPixelsForDips(-5);
-                    }
-                    else if (
+                    } else if (
                             /*startAngle > DIAL_6_OCLOCK
                                     &&
                                     startAngle < DIAL_12_OCLOCK
                                     && */
-                                    endAngle <= DIAL_12_OCLOCK)
-                    {
+                            endAngle <= DIAL_12_OCLOCK) {
                         // draw the text at the end of the slice
                         mTextPaint.setTextAlign(Paint.Align.LEFT);
                         path.moveTo(endPoint.x, endPoint.y);
                         path.lineTo(centerX, centerY);
                         vOffset = getPixelsForDips(20);
                         hOffset = getPixelsForDips(5);
-                    }
-                    else
-                    {
+                    } else {
                         // draw the text at the beginning of the slice
                         //mTitlePaint.setTextAlign(Paint.Align.LEFT);
                         //path.moveTo(startPoint.x, startPoint.y);
@@ -523,9 +528,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             if (!isInAmbientMode()) {
                 // only draw this stuff in interactive mode.
                 //Log.d(TAG, "We are not in ambient mode");
-            }
-            else
-            {
+            } else {
                 //Log.d(TAG, "We are in ambient mode");
             }
         }
@@ -589,6 +592,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
         }
 
         boolean mRegisteredTimeZoneReceiver = false;
+
         private void registerReceiver() {
             if (mRegisteredTimeZoneReceiver) {
                 return;
