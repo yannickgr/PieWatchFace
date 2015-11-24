@@ -54,4 +54,14 @@ public class CalendarEvent {
         return PieUtils.getDegreesForMinutes(((this.End.getHours() * 60) + this.End.getMinutes()) -
                 ((this.Start.getHours() * 60) + this.Start.getMinutes()));
     }
+
+    @Override
+    public String toString() {
+        return "Title: " + this.Title
+                + "Location: " + this.Location
+                + "Start: " + this.Start.toString()
+                + "End: " + this.End.toString()
+                + "All day: " + this.AllDay
+                + "Color: " + this.Color;
+    }
 }
