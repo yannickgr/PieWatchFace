@@ -29,7 +29,6 @@ import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.SurfaceHolder;
 
 import java.util.ArrayList;
@@ -45,137 +44,20 @@ import java.util.concurrent.TimeUnit;
  * Created by Yannick Grossard on 13/04/15.
  */
 public class PieWatchFaceService extends CanvasWatchFaceService {
+
     private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1);
 
     @Override
-    public Engine onCreateEngine() {
-        return new Engine();
-    }
-
-    /**
-     * For any angle of the circle given, get the coordinates of its point on the circumference
-     *
-     * @param radius
-     * @param angle
-     * @param centreX
-     * @param centreY
-     * @return
-     */
-    public Point getPointOnTheCircleCircumference(double radius, double angle, float centreX, float centreY) {
-        int y = (int) Math.round(centreY + radius * Math.sin(angle * Math.PI / 180f));
-        int x = (int) Math.round(centreX + radius * Math.cos(angle * Math.PI / 180f));
-
-        return new Point(x, y);
-    }
-
-    /**
-     * Transform a given date to minutes, removing the difference for AM and PM
-     *
-     * @param date
-     * @return
-     */
-    public int getDateInMinutes(Date date) {
-        int minutes = date.getMinutes();
-        int hours = date.getHours();
-
-        if (hours > 12) {
-            hours = hours - 12;
-        }
-        minutes = minutes + (hours * 60);
-
-        return minutes;
-    }
-
-    private float getDegreesForMinutes(int minutes) {
-        return minutes * 0.5f;
-    }
-
-    private float getAngleForDate(Date date, boolean takeArcDrawingOffsetIntoAccount) {
-        int minutes = getDateInMinutes(date);
-        return this.getAngleForDate(minutes, takeArcDrawingOffsetIntoAccount);
-    }
-
-    private float getAngleForDate(int minutes, boolean takeArcDrawingOffsetIntoAccount) {
-        // get the angle starting from the top (12 o clock)
-        float startAngle = this.getDegreesForMinutes(minutes);
-
-        if (takeArcDrawingOffsetIntoAccount) {
-            // 0 degrees starts at 180 minutes/3 hours for the canvas/paintbrush (so NOT at noon/12)
-            // result: everything below that must get 270 degrees added, everything above that must get 180 minutes subtracted
-
-            if (minutes >= 180) {
-                // this is more then 3 hours, subtracting the 90 degree offset
-                startAngle -= 90f;
-            } else {
-                // this is less then 3 hours, rotating to the top (push 270 degrees)
-                startAngle += 270f;
-            }
-        }
-
-        return startAngle;
-    }
-
-    public float getPixelsForDips(float dips) {
-        Resources r = getResources();
-        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, r.getDisplayMetrics());
-
-        return px;
-    }
-
-    private class CalendarEvent {
-        public long CalendarId;
-        public String Title;
-        public Date Start;
-        public Date End;
-        public int Duration;
-        public String Location;
-        public boolean AllDay;
-        public int Color;
-
-        /**
-         * This class contains the info we need on a calendar event, combined with some helpers classes
-         *
-         * @param calendarId
-         * @param title
-         * @param start
-         * @param end
-         * @param duration
-         * @param location
-         * @param allDay
-         * @param color
-         */
-        public CalendarEvent(long calendarId,
-                             String title, Date start, Date end, int duration,
-                             String location, boolean allDay,
-                             int color) {
-            this.CalendarId = calendarId;
-            this.Title = title;
-            this.Start = start;
-            this.End = end;
-            this.Duration = duration;
-            this.Location = location;
-            this.AllDay = allDay;
-            this.Color = color;
-        }
-
-        public float getStartAngle(boolean takeArcDrawingOffsetIntoAccount) {
-            return getAngleForDate(this.Start, takeArcDrawingOffsetIntoAccount);
-        }
-
-        public float getEndAngle(boolean takeArcDrawingOffsetIntoAccount) {
-            return getAngleForDate(this.End, takeArcDrawingOffsetIntoAccount);
-        }
-
-        public float getDurationInDegrees() {
-            return getDegreesForMinutes(((this.End.getHours() * 60) + this.End.getMinutes()) -
-                    ((this.Start.getHours() * 60) + this.Start.getMinutes()));
-        }
+    public PieWatchFaceEngine onCreateEngine() {
+        return new PieWatchFaceEngine();
     }
 
     // implement service callback methods
-    private class Engine extends CanvasWatchFaceService.Engine {
+    class PieWatchFaceEngine extends CanvasWatchFaceService.Engine {
 
         static final int MSG_UPDATE_TIME = 0;
+        private final String TAG = PieWatchFaceEngine.class.getSimpleName();
+
         /* handler to update the time once a second in interactive mode */
         final Handler mUpdateTimeHandler = new Handler() {
             @Override
@@ -318,8 +200,6 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             RectF boundsF = new RectF(bounds);
             double radius = width / 2;
 
-            String TAG = "PieApp";
-
             // getting calendar data
             // This load should move to a separate async function
             // Projection array. Creating indices for this array instead of doing
@@ -361,8 +241,8 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             // get the current time to find out the current angle
             long begin = System.currentTimeMillis();
             Date now = new Date(begin);
-            int nowMinutes = getDateInMinutes(now);
-            float nowAngle = getAngleForDate(now, true);
+            int nowMinutes = PieUtils.getDateInMinutes(now);
+            float nowAngle = PieUtils.getAngleForDate(now, true);
 
             // query the upcoming (next 12 hours) calendar events
             Uri.Builder builder =
@@ -373,7 +253,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
                     null); //TODO: CalendarContract.Instances.BEGIN); // selection, selectionArgs, null);
 
             // looping through the results, creating a CalendarEvent instance for each event
-            List<CalendarEvent> events = new ArrayList<CalendarEvent>();
+            List<CalendarEvent> events = new ArrayList<>();
             while (cur.moveToNext()) {
                 /* adding dummy events at the moment (see below)
                 events.add(new CalendarEvent(
@@ -462,8 +342,8 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
                 if (event.AllDay) {
                     //TODO: These should be added just behind the current time indicator, and be "dragged along" for the rest of the day. The downside is we lose some of our events horizon.
                 } else {
-                    int startMinutes = getDateInMinutes(event.Start);
-                    int endMinutes = getDateInMinutes(event.End);
+                    int startMinutes = PieUtils.getDateInMinutes(event.Start);
+                    int endMinutes = PieUtils.getDateInMinutes(event.End);
                     float endAngle = event.getEndAngle(true);
                     float startAngle = event.getStartAngle(true);
                     float duration = event.getDurationInDegrees();
@@ -481,8 +361,8 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
 
                     // drawing the title inside the pie piece
                     Path path = new Path();
-                    Point endPoint = getPointOnTheCircleCircumference(radius, endAngle, centerX, centerY);
-                    Point startPoint = getPointOnTheCircleCircumference(radius, startAngle, centerX, centerY);
+                    Point endPoint = PieUtils.getPointOnTheCircleCircumference(radius, endAngle, centerX, centerY);
+                    Point startPoint = PieUtils.getPointOnTheCircleCircumference(radius, startAngle, centerX, centerY);
                     float vOffset = 0;
                     float hOffset = 0;
 
@@ -502,8 +382,8 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
                         mTextPaint.setTextAlign(Paint.Align.RIGHT);
                         path.moveTo(centerX, centerY);
                         path.lineTo(endPoint.x, endPoint.y);
-                        vOffset = getPixelsForDips(-5);
-                        hOffset = getPixelsForDips(-5);
+                        vOffset = PieUtils.getPixelsForDips(PieWatchFaceService.this, -5);
+                        hOffset = PieUtils.getPixelsForDips(PieWatchFaceService.this, -5);
                     } else if (
                             /*startAngle > DIAL_6_OCLOCK
                                     &&
@@ -514,8 +394,8 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
                         mTextPaint.setTextAlign(Paint.Align.LEFT);
                         path.moveTo(endPoint.x, endPoint.y);
                         path.lineTo(centerX, centerY);
-                        vOffset = getPixelsForDips(20);
-                        hOffset = getPixelsForDips(5);
+                        vOffset = PieUtils.getPixelsForDips(PieWatchFaceService.this, 20);
+                        hOffset = PieUtils.getPixelsForDips(PieWatchFaceService.this, 5);
                     } else {
                         // draw the text at the beginning of the slice
                         //mTitlePaint.setTextAlign(Paint.Align.LEFT);
@@ -535,14 +415,14 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             //canvas.drawArc(boundsF, baselineAngle - 30, 30, true, mPiePaint);
 
             // drawing current time indicator
-            Point nowPoint = getPointOnTheCircleCircumference(radius, nowAngle, centerX, centerY);
+            Point nowPoint = PieUtils.getPointOnTheCircleCircumference(radius, nowAngle, centerX, centerY);
             canvas.drawLine(centerX, centerY, nowPoint.x, nowPoint.y, mDialPaint);
 
             // drawing center dot
-            canvas.drawCircle(centerX, centerY, getPixelsForDips(5), mDialPaint);
+            canvas.drawCircle(centerX, centerY, PieUtils.getPixelsForDips(PieWatchFaceService.this, 5), mDialPaint);
 
             // drawing hour markers
-            float markerLength = getPixelsForDips(10);
+            float markerLength = PieUtils.getPixelsForDips(PieWatchFaceService.this, 10);
             canvas.drawLine(centerX, height, centerX, height - markerLength, mDialPaint);
             canvas.drawLine(centerX, 0, centerX, markerLength, mDialPaint);
             canvas.drawLine(width, centerY, width - markerLength, centerY, mDialPaint);
