@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.SweepGradient;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -34,6 +35,7 @@ public class PieWatchFace {
     Paint mPiePaint;
     Paint mTextPaint;
     Paint mDialPaint;
+    Paint mHorizonPaint;
 
     @SuppressWarnings("unused")
     private boolean mLowBitAmbientMode;
@@ -90,6 +92,15 @@ public class PieWatchFace {
 
         if (!ambientMode)
             drawCalEvents(canvas, centerX, centerY, boundsF, radius, nowMinutes, nowAngle);
+
+        // drawing horizon separator
+        int horizonSeparatorLength = 40;
+        int[] colors = {Color.TRANSPARENT, Color.BLACK};
+        float[] positions = {(nowAngle - horizonSeparatorLength) / 360f, nowAngle / 360f};
+        SweepGradient horizonGradient = new SweepGradient(centerX, centerY, colors, positions);
+        mHorizonPaint.setShader(horizonGradient);
+
+        canvas.drawArc(boundsF, nowAngle - horizonSeparatorLength, horizonSeparatorLength, true, mHorizonPaint);
 
         // drawing current time indicator
         Point nowPoint = PieUtils.getPointOnTheCircleCircumference(radius, nowAngle, centerX, centerY);
@@ -232,6 +243,13 @@ public class PieWatchFace {
         mDialPaint.setAntiAlias(true);
         mDialPaint.setStrokeCap(Paint.Cap.ROUND);
         mDialPaint.setShadowLayer(10.0f, 0.0f, 2.0f, 0xFF000000);
+
+        // the brush used to paint the horizon separator
+        mHorizonPaint = new Paint();
+        mHorizonPaint.setColor(Color.BLACK);
+        mHorizonPaint.setStrokeWidth(5.0f);
+        mHorizonPaint.setAntiAlias(true);
+        mHorizonPaint.setStrokeCap(Paint.Cap.ROUND);
     }
 
     @NonNull
