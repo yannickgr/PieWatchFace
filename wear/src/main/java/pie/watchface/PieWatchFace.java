@@ -154,65 +154,76 @@ public class PieWatchFace {
                 float startAngle = event.getStartAngle(true);
                 float duration = event.getDurationInDegrees();
 
+                mPiePaint.setColor(event.Color);
                 if (nowMinutes > startMinutes &&
                         nowMinutes < endMinutes &&
                         baselineAngle == nowAngle) {
                     // we are currently in progress of this event, use the start as baseline
                     baselineAngle = startAngle;
+
+                    // cut the duration short
+                    duration = duration - (nowAngle - startAngle);
+
+                    // drawing the pie piece from now for the rest of the duration
+                    canvas.drawArc(boundsF, nowAngle, duration, true, mPiePaint);
+                }
+                else {
+                    // drawing the pie piece fully
+                    canvas.drawArc(boundsF, startAngle, duration, true, mPiePaint);
                 }
 
-                // drawing the pie piece
-                mPiePaint.setColor(event.Color);
-                canvas.drawArc(boundsF, startAngle, duration, true, mPiePaint);
-
                 // drawing the title inside the pie piece
-                Path path = new Path();
-                Point endPoint = PieUtils.getPointOnTheCircleCircumference(radius, endAngle, centerX, centerY);
-                Point startPoint = PieUtils.getPointOnTheCircleCircumference(radius, startAngle, centerX, centerY);
+                int minimumDurationDegreesForTitle = 12;
 
-                float vOffset;
-                float hOffset;
+                if (duration >= minimumDurationDegreesForTitle) {
+                    Path path = new Path();
+                    Point endPoint = PieUtils.getPointOnTheCircleCircumference(radius, endAngle, centerX, centerY);
+                    Point startPoint = PieUtils.getPointOnTheCircleCircumference(radius, startAngle, centerX, centerY);
 
-                //Log.d(TAG, "Event " + event.Title + ", start angle " + startAngle + " - end angle " + endAngle);
-                if (
+                    float vOffset;
+                    float hOffset;
+
+                    //Log.d(TAG, "Event " + event.Title + ", start angle " + startAngle + " - end angle " + endAngle);
+                    if (
                         /*(
                                 startAngle > DIAL_12_OCLOCK ||
                                 (startAngle >= DIAL_3_OCLOCK && startAngle < DIAL_6_OCLOCK)
                         )
                         &&*/
-                        (
-                                endAngle <= DIAL_6_OCLOCK ||
-                                        (endAngle <= DIAL_3_OCLOCK_ALT && endAngle > DIAL_12_OCLOCK)
-                        )
-                        ) {
-                    // draw the text at the end of the slice
-                    mTextPaint.setTextAlign(Paint.Align.RIGHT);
-                    path.moveTo(centerX, centerY);
-                    path.lineTo(endPoint.x, endPoint.y);
-                    vOffset = PieUtils.getPixelsForDips(mContext, -5);
-                    hOffset = PieUtils.getPixelsForDips(mContext, -5);
-                } else if (
+                            (
+                                    endAngle <= DIAL_6_OCLOCK ||
+                                            (endAngle <= DIAL_3_OCLOCK_ALT && endAngle > DIAL_12_OCLOCK)
+                            )
+                            ) {
+                        // draw the text at the end of the slice
+                        mTextPaint.setTextAlign(Paint.Align.RIGHT);
+                        path.moveTo(centerX, centerY);
+                        path.lineTo(endPoint.x, endPoint.y);
+                        vOffset = PieUtils.getPixelsForDips(mContext, -5);
+                        hOffset = PieUtils.getPixelsForDips(mContext, -5);
+                    } else if (
                             /*startAngle > DIAL_6_OCLOCK
                                     &&
                                     startAngle < DIAL_12_OCLOCK
                                     && */
-                        endAngle <= DIAL_12_OCLOCK) {
-                    // draw the text at the end of the slice
-                    mTextPaint.setTextAlign(Paint.Align.LEFT);
-                    path.moveTo(endPoint.x, endPoint.y);
-                    path.lineTo(centerX, centerY);
-                    vOffset = PieUtils.getPixelsForDips(mContext, 20);
-                    hOffset = PieUtils.getPixelsForDips(mContext, 5);
-                } else {
-                    // draw the text at the beginning of the slice
-                    //mTitlePaint.setTextAlign(Paint.Align.LEFT);
-                    //path.moveTo(startPoint.x, startPoint.y);
-                    //path.lineTo(centerX, centerY);
-                    Log.d(TAG, "Can't determine pie title placing. Start angle is " + startAngle + " and end angle is " + endAngle);
-                    throw new IllegalArgumentException("We do not know where to place the title of this appointment");
-                }
+                            endAngle <= DIAL_12_OCLOCK) {
+                        // draw the text at the end of the slice
+                        mTextPaint.setTextAlign(Paint.Align.LEFT);
+                        path.moveTo(endPoint.x, endPoint.y);
+                        path.lineTo(centerX, centerY);
+                        vOffset = PieUtils.getPixelsForDips(mContext, 20);
+                        hOffset = PieUtils.getPixelsForDips(mContext, 5);
+                    } else {
+                        // draw the text at the beginning of the slice
+                        //mTitlePaint.setTextAlign(Paint.Align.LEFT);
+                        //path.moveTo(startPoint.x, startPoint.y);
+                        //path.lineTo(centerX, centerY);
+                        Log.d(TAG, "Can't determine pie title placing. Start angle is " + startAngle + " and end angle is " + endAngle);
+                        throw new IllegalArgumentException("We do not know where to place the title of this appointment");
+                    }
 
-                canvas.drawTextOnPath(event.Title, path, hOffset, vOffset, mTextPaint);
+                    canvas.drawTextOnPath(event.Title, path, hOffset, vOffset, mTextPaint);
+                }
             }
 
         } // for each event
