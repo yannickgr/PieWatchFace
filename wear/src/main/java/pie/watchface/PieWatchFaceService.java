@@ -1,10 +1,5 @@
 package pie.watchface;
 
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,12 +11,9 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -30,8 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Yannick Grossard on 13/04/15.
@@ -50,48 +40,17 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
     // implement service callback methods
     class PieWatchFaceEngine extends CanvasWatchFaceService.Engine {
 
-        static final int MSG_UPDATE_TIME = 0;
-        private final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1);
-
-        @SuppressLint("HandlerLeak")
-        /* handler to update the time once a second in interactive mode */
-        final Handler mUpdateTimeHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                switch (message.what) {
-                    case MSG_UPDATE_TIME:
-                        invalidate();
-                        if (shouldTimerBeRunning()) {
-                            long timeMs = System.currentTimeMillis();
-                            long delayMs = INTERACTIVE_UPDATE_RATE_MS
-                                    - (timeMs % INTERACTIVE_UPDATE_RATE_MS);
-                            mUpdateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
-                        }
-                        break;
-                }
-            }
-        };
         public final String TAG = PieWatchFaceEngine.class.getSimpleName();
-        // a time object
-        Time mTime;
-        /* receiver to update the time zone */
-        final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                mTime.clear(intent.getStringExtra("time-zone"));
-                mTime.setToNow();
-            }
-        };
+
         // device features
-        boolean mLowBitAmbient;
+        private boolean mLowBitAmbient;
+        private boolean mBurnInProtection;
         // graphic objects
         Bitmap mBackgroundBitmap;
         Bitmap mBackgroundScaledBitmap;
         Paint mPiePaint;
         Paint mTextPaint;
         Paint mDialPaint;
-        boolean mRegisteredTimeZoneReceiver = false;
-        private boolean mBurnInProtection;
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -102,7 +61,6 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
                     .setCardPeekMode(WatchFaceStyle.PEEK_MODE_SHORT)
                     .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
                     .setShowSystemUiTime(false)
-                    .setAcceptsTapEvents(true)
                     .build());
 
 
@@ -112,13 +70,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
                 mBackgroundBitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();
             }
 
-            /**
-             * Initialize the paint brushes
-             */readyPaintBrushes();
-
-
-            // allocate an object to hold the time
-            mTime = new Time();
+            readyPaintBrushes();
         }
 
         @Override
@@ -143,18 +95,11 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             Log.i(TAG, "onAmbientModeChanged(), inAmbientMode: " + inAmbientMode);
 
             /* the wearable switched between modes */
-            if (mLowBitAmbient) {
-                boolean antiAlias = !inAmbientMode;
-                mPiePaint.setAntiAlias(antiAlias);
-            }
+//            if (mLowBitAmbient) {
+//                boolean antiAlias = !inAmbientMode;
+//                mPiePaint.setAntiAlias(antiAlias);
+//            }
             invalidate();
-            updateTimer();
-        }
-
-        @Override
-        public void onTapCommand(int tapType, int x, int y, long eventTime) {
-            super.onTapCommand(tapType, x, y, eventTime);
-            Log.i(TAG, "Tap Command: " + tapType + ", tapped @(" + x + ", " + y + "), time: " + eventTime);
         }
 
         @Override
@@ -162,18 +107,6 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             super.onDraw(canvas, bounds);
 
             Log.i(TAG, "onDraw() canvas draw, bounds: " + bounds);
-
-            if (isInAmbientMode()) {
-                //Log.d(TAG, "We are in ambient mode");
-                canvas.drawColor(Color.BLACK);
-                return;
-            } else {
-                // only draw this stuff in interactive mode.
-                //Log.d(TAG, "We are not in ambient mode");
-            }
-
-            // update the time
-            mTime.setToNow();
 
             // getting the bounds
             int width = bounds.width();
@@ -201,6 +134,37 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             Date now = new Date(begin);
             int nowMinutes = PieUtils.getDateInMinutes(now);
             float nowAngle = PieUtils.getAngleForDate(now, true);
+
+            if (!isInAmbientMode())
+                drawCalEvents(canvas, centerX, centerY, boundsF, radius, begin, nowMinutes, nowAngle);
+
+            // drawing current time indicator
+            Point nowPoint = PieUtils.getPointOnTheCircleCircumference(radius, nowAngle, centerX, centerY);
+            canvas.drawLine(centerX, centerY, nowPoint.x, nowPoint.y, mDialPaint);
+
+            // drawing center dot
+            canvas.drawCircle(centerX, centerY, PieUtils.getPixelsForDips(PieWatchFaceService.this, 5), mDialPaint);
+
+            // drawing hour markers
+            float markerLength = PieUtils.getPixelsForDips(PieWatchFaceService.this, 10);
+            canvas.drawLine(centerX, height, centerX, height - markerLength, mDialPaint);
+            canvas.drawLine(centerX, 0, centerX, markerLength, mDialPaint);
+            canvas.drawLine(width, centerY, width - markerLength, centerY, mDialPaint);
+            canvas.drawLine(0, centerY, markerLength, centerY, mDialPaint);
+
+            if (isInAmbientMode()) {
+                Rect peekCardBounds = getPeekCardPosition();
+                Paint bgPaint = new Paint();
+                bgPaint.setColor(Color.BLACK);
+                canvas.drawRect(peekCardBounds, bgPaint);
+
+                Paint linePaint = new Paint();
+                linePaint.setColor(Color.WHITE);
+                canvas.drawLine(peekCardBounds.left, peekCardBounds.top, peekCardBounds.right, peekCardBounds.top, linePaint);
+            }
+        }
+
+        private void drawCalEvents(Canvas canvas, float centerX, float centerY, RectF boundsF, double radius, long begin, int nowMinutes, float nowAngle) {
             List<CalendarEvent> events = getCalendarEvents(begin);
 
 
@@ -289,24 +253,6 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
                 }
 
             } // for each event
-
-            // TODO: draw horizon gradient
-            //mPiePaint.setColor(Color.DKGRAY);
-            //canvas.drawArc(boundsF, baselineAngle - 30, 30, true, mPiePaint);
-
-            // drawing current time indicator
-            Point nowPoint = PieUtils.getPointOnTheCircleCircumference(radius, nowAngle, centerX, centerY);
-            canvas.drawLine(centerX, centerY, nowPoint.x, nowPoint.y, mDialPaint);
-
-            // drawing center dot
-            canvas.drawCircle(centerX, centerY, PieUtils.getPixelsForDips(PieWatchFaceService.this, 5), mDialPaint);
-
-            // drawing hour markers
-            float markerLength = PieUtils.getPixelsForDips(PieWatchFaceService.this, 10);
-            canvas.drawLine(centerX, height, centerX, height - markerLength, mDialPaint);
-            canvas.drawLine(centerX, 0, centerX, markerLength, mDialPaint);
-            canvas.drawLine(width, centerY, width - markerLength, centerY, mDialPaint);
-            canvas.drawLine(0, centerY, markerLength, centerY, mDialPaint);
         }
 
         @Override
@@ -317,61 +263,12 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
             Log.i(TAG, "onVisibilityChanged(), visible:" + visible);
 
             /* the watch face became visible or invisible */
-            if (visible) {
-                pieRegisterReceiver();
-
-                // Update time zone in case it changed while we weren't visible.
-                mTime.clear(TimeZone.getDefault().getID());
-                mTime.setToNow();
-            } else {
-                pieUnregisterReceiver();
-            }
-
-            // Whether the timer should be running depends on whether we're visible and
-            // whether we're in ambient mode), so we may need to start or stop the timer
-            updateTimer();
+            invalidate();
         }
-
 
         //
         // Mark: Custom methods
         //
-
-
-        private void pieRegisterReceiver() {
-            Log.i(TAG, "pieRegisterReceiver()");
-
-            if (mRegisteredTimeZoneReceiver) {
-                return;
-            }
-            mRegisteredTimeZoneReceiver = true;
-            IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
-            PieWatchFaceService.this.registerReceiver(mTimeZoneReceiver, filter);
-        }
-
-        private void pieUnregisterReceiver() {
-            Log.i(TAG, "pieUnregisterReceiver()");
-
-            if (!mRegisteredTimeZoneReceiver) {
-                return;
-            }
-
-            mRegisteredTimeZoneReceiver = false;
-            PieWatchFaceService.this.unregisterReceiver(mTimeZoneReceiver);
-        }
-
-        private void updateTimer() {
-            Log.i(TAG, "updateTimer()");
-
-            mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
-            if (shouldTimerBeRunning()) {
-                mUpdateTimeHandler.sendEmptyMessage(MSG_UPDATE_TIME);
-            }
-        }
-
-        private boolean shouldTimerBeRunning() {
-            return isVisible() && !isInAmbientMode();
-        }
 
         private void readyPaintBrushes() {
             // the brush used to paint the pie pieces
