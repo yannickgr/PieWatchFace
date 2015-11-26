@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -36,6 +37,8 @@ public class PieWatchFace {
     Paint mTextPaint;
     Paint mDialPaint;
     Paint mHorizonPaint;
+    private Paint mTimeLeftTextPaint;
+
 
     @SuppressWarnings("unused")
     private boolean mLowBitAmbientMode;
@@ -166,8 +169,7 @@ public class PieWatchFace {
 
                     // drawing the pie piece from now for the rest of the duration
                     canvas.drawArc(boundsF, nowAngle, duration, true, mPiePaint);
-                }
-                else {
+                } else {
                     // drawing the pie piece fully
                     canvas.drawArc(boundsF, startAngle, duration, true, mPiePaint);
                 }
@@ -177,11 +179,16 @@ public class PieWatchFace {
 
                 if (duration >= minimumDurationDegreesForTitle) {
                     Path path = new Path();
+                    Path timePath = new Path();
+
                     Point endPoint = PieUtils.getPointOnTheCircleCircumference(radius, endAngle, centerX, centerY);
                     Point startPoint = PieUtils.getPointOnTheCircleCircumference(radius, startAngle, centerX, centerY);
 
                     float vOffset;
                     float hOffset;
+
+                    float timeVOffset;
+                    float timeHOffset;
 
                     //Log.d(TAG, "Event " + event.Title + ", start angle " + startAngle + " - end angle " + endAngle);
                     if (
@@ -201,6 +208,16 @@ public class PieWatchFace {
                         path.lineTo(endPoint.x, endPoint.y);
                         vOffset = PieUtils.getPixelsForDips(mContext, -5);
                         hOffset = PieUtils.getPixelsForDips(mContext, -5);
+
+                        // TODO: 11/26/15 check if there's space for drawing the time text
+                        mTimeLeftTextPaint.setTextAlign(Paint.Align.RIGHT);
+
+                        timePath.moveTo(centerX, centerY);
+                        timePath.lineTo(startPoint.x, startPoint.y);
+
+                        timeVOffset = PieUtils.getPixelsForDips(mContext, 13);
+                        timeHOffset = PieUtils.getPixelsForDips(mContext, -5);
+
                     } else if (
                             /*startAngle > DIAL_6_OCLOCK
                                     &&
@@ -213,6 +230,16 @@ public class PieWatchFace {
                         path.lineTo(centerX, centerY);
                         vOffset = PieUtils.getPixelsForDips(mContext, 20);
                         hOffset = PieUtils.getPixelsForDips(mContext, 5);
+
+                        // TODO: 11/26/15 check if there's space for drawing the time text
+                        mTimeLeftTextPaint.setTextAlign(Paint.Align.LEFT);
+
+                        timePath.moveTo(startPoint.x, startPoint.y);
+                        timePath.lineTo(centerX, centerY);
+
+                        timeVOffset = PieUtils.getPixelsForDips(mContext, -5);
+                        timeHOffset = PieUtils.getPixelsForDips(mContext, 5);
+
                     } else {
                         // draw the text at the beginning of the slice
                         //mTitlePaint.setTextAlign(Paint.Align.LEFT);
@@ -223,6 +250,12 @@ public class PieWatchFace {
                     }
 
                     canvas.drawTextOnPath(event.Title, path, hOffset, vOffset, mTextPaint);
+
+                    canvas.drawTextOnPath("in 38min", timePath
+                            , timeHOffset
+                            , timeVOffset
+                            , mTimeLeftTextPaint);
+
                 }
             }
 
@@ -245,6 +278,11 @@ public class PieWatchFace {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStrokeCap(Paint.Cap.ROUND);
         mTextPaint.setTextSize(24);
+
+        // the brush used to paint the time left till next event piece
+        mTimeLeftTextPaint = new Paint(mTextPaint);
+        mTimeLeftTextPaint.setTextSize(19);
+        mTimeLeftTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
 
         // the brush used to paint the hour markers and current time marker
         mDialPaint = new Paint();
