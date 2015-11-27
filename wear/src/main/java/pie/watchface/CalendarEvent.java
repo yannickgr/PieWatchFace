@@ -8,11 +8,18 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import pie.watchface.PieWatchFace.Pos;
+
 /**
  * Created by ghans on 11/23/15.
  */
 public class CalendarEvent {
 
+    private static final String TAG = CalendarEvent.class.getSimpleName();
+    public final boolean drawTitleOnStartingEdge;
+    public final float startAngle;
+    public final float endAngle;
+    public final float durationInDegrees;
     public long CalendarId;
     public String Title;
     public Date Start;
@@ -22,18 +29,6 @@ public class CalendarEvent {
     public boolean AllDay;
     public int Color;
 
-    /**
-     * This class contains the info we need on a calendar event, combined with some helpers classes
-     *
-     * @param calendarId
-     * @param title
-     * @param start
-     * @param end
-     * @param duration
-     * @param location
-     * @param allDay
-     * @param color
-     */
     public CalendarEvent(long calendarId,
                          String title, Date start, Date end, int duration,
                          String location, boolean allDay,
@@ -46,6 +41,13 @@ public class CalendarEvent {
         this.Location = location;
         this.AllDay = allDay;
         this.Color = color;
+
+        this.startAngle = PieUtils.getAngleForDate(this.Start, true);
+        this.endAngle = PieUtils.getAngleForDate(this.End, true);
+        this.durationInDegrees = PieUtils.getDegreesForMinutes(((this.End.getHours() * 60) + this.End.getMinutes()) -
+                ((this.Start.getHours() * 60) + this.Start.getMinutes()));
+
+        this.drawTitleOnStartingEdge = this.endAngle <= Pos.DIAL_6_OCLOCK.nativeInt || (this.endAngle <= Pos.DIAL_3_OCLOCK_ALT.nativeInt && this.endAngle > Pos.DIAL_12_OCLOCK.nativeInt);
     }
 
     @NonNull
@@ -116,13 +118,13 @@ public class CalendarEvent {
         Calendar start = new GregorianCalendar();
         Calendar end = new GregorianCalendar();
 
-        start.set(Calendar.HOUR_OF_DAY, 6);
+        /*start.set(Calendar.HOUR_OF_DAY, 6);
         start.set(Calendar.MINUTE, 0);
         start.set(Calendar.SECOND, 0);
         end.set(Calendar.HOUR_OF_DAY, 7);
         end.set(Calendar.MINUTE, 0);
         end.set(Calendar.SECOND, 0);
-        events.add(new CalendarEvent(1, "Running", start.getTime(), end.getTime(), 0, "Outside", false, android.graphics.Color.BLUE));
+        events.add(new CalendarEvent(1, "Running", start.getTime(), end.getTime(), 0, "Outside", false, android.graphics.Color.BLUE));*/
 
         start.set(Calendar.HOUR_OF_DAY, 12);
         start.set(Calendar.MINUTE, 0);
@@ -166,26 +168,13 @@ public class CalendarEvent {
         return events;
     }
 
-    public float getStartAngle(boolean takeArcDrawingOffsetIntoAccount) {
-        return PieUtils.getAngleForDate(this.Start, takeArcDrawingOffsetIntoAccount);
-    }
-
-    public float getEndAngle(boolean takeArcDrawingOffsetIntoAccount) {
-        return PieUtils.getAngleForDate(this.End, takeArcDrawingOffsetIntoAccount);
-    }
-
-    public float getDurationInDegrees() {
-        return PieUtils.getDegreesForMinutes(((this.End.getHours() * 60) + this.End.getMinutes()) -
-                ((this.Start.getHours() * 60) + this.Start.getMinutes()));
-    }
-
     @Override
     public String toString() {
-        return "Title: " + this.Title
-                + "Location: " + this.Location
-                + "Start: " + this.Start.toString()
-                + "End: " + this.End.toString()
-                + "All day: " + this.AllDay
-                + "Color: " + this.Color;
+        return "title: " + this.Title
+                + " start: " + this.Start.toString()
+                + " end: " + this.End.toString()
+                + " all day: " + this.AllDay
+                + " startAngle: " + this.startAngle
+                + " endAngle: " + this.endAngle;
     }
 }
