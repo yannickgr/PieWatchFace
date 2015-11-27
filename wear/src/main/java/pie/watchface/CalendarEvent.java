@@ -142,7 +142,7 @@ public class CalendarEvent {
         end.set(Calendar.HOUR_OF_DAY, 15);
         end.set(Calendar.MINUTE, 0);
         end.set(Calendar.SECOND, 0);
-        events.add(new CalendarEvent(1, "Conf.call", start.getTime(), end.getTime(), 0, "Room A1", false, android.graphics.Color.parseColor("#2196F3")));
+        events.add(new CalendarEvent(1, "Conference call about something", start.getTime(), end.getTime(), 0, "Room A1", false, android.graphics.Color.parseColor("#2196F3")));
 
         start.set(Calendar.HOUR_OF_DAY, 15);
         start.set(Calendar.MINUTE, 30);
@@ -158,7 +158,7 @@ public class CalendarEvent {
         end.set(Calendar.HOUR_OF_DAY, 20);
         end.set(Calendar.MINUTE, 0);
         end.set(Calendar.SECOND, 0);
-        events.add(new CalendarEvent(1, "Dinner w Amy", start.getTime(), end.getTime(), 0, "La Place", false, android.graphics.Color.parseColor("#009688")));
+        events.add(new CalendarEvent(1, "Dinner with Amy and John", start.getTime(), end.getTime(), 0, "La Place", false, android.graphics.Color.parseColor("#009688")));
 
         start.set(Calendar.HOUR_OF_DAY, 21);
         start.set(Calendar.MINUTE, 0);

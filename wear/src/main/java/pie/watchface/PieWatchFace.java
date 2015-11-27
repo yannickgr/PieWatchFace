@@ -5,12 +5,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.graphics.Typeface;
 
@@ -139,27 +141,32 @@ public class PieWatchFace {
             Path eventTitlePath = new Path();
             float titleTextVOffset;
             float titleTextHOffset;
+            Point edgePoint;
 
             if (event.drawTitleOnStartingEdge) {
+                edgePoint = startPoint;
+
                 if ((event.startAngle >= 270 && event.startAngle <= 360) || (event.startAngle >= 0 && event.startAngle < 90)) {
                     // drawing text on the starting edge when you're on the first half of circle
                     mTextPaint.setTextAlign(Paint.Align.RIGHT);
                     eventTitlePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
-                    eventTitlePath.lineTo(startPoint.x, startPoint.y);
+                    eventTitlePath.lineTo(edgePoint.x, edgePoint.y);
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, 15);
                     titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
                 } else {
                     // drawing text on the starting edge when you're on the second half of circle
                     mTextPaint.setTextAlign(Paint.Align.LEFT);
-                    eventTitlePath.moveTo(startPoint.x, startPoint.y);
+                    eventTitlePath.moveTo(edgePoint.x, edgePoint.y);
                     eventTitlePath.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
                     titleTextHOffset = PieUtils.getPixelsForDips(mContext, 5);
                 }
             } else {
+                edgePoint = endPoint;
+
                 if (event.endAngle >= 90 && event.endAngle < 270) {
                     // drawing text on the ending edge when you're on the second half of circle
-                    eventTitlePath.moveTo(endPoint.x, endPoint.y);
+                    eventTitlePath.moveTo(edgePoint.x, edgePoint.y);
                     eventTitlePath.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
                     mTextPaint.setTextAlign(Paint.Align.LEFT);
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, 15);
@@ -167,12 +174,17 @@ public class PieWatchFace {
                 } else {
                     // drawing text on the ending edge when you're on the first half of circle
                     eventTitlePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
-                    eventTitlePath.lineTo(endPoint.x, endPoint.y);
+                    eventTitlePath.lineTo(edgePoint.x, edgePoint.y);
                     mTextPaint.setTextAlign(Paint.Align.RIGHT);
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
                     titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
                 }
             }
+
+            int[] colors = {Color.WHITE, Color.TRANSPARENT};
+            float[] positions = {0.6f, 0.9f};
+            LinearGradient textGradient = new LinearGradient(edgePoint.x, edgePoint.y, mWatchFaceCenter.x, mWatchFaceCenter.y, colors, positions, Shader.TileMode.MIRROR);
+            mTextPaint.setShader(textGradient);
 
             mCanvas.drawTextOnPath(event.Title, eventTitlePath, titleTextHOffset, titleTextVOffset, mTextPaint);
         }
