@@ -38,6 +38,7 @@ public class PieWatchFace {
     private Paint mPiePaint;
     private Paint mTextPaint;
     private Paint mDialPaint;
+    private Paint mDotPaint;
     private Paint mHorizonPaint;
     private Paint mTimeLeftTextPaint;
 
@@ -95,7 +96,7 @@ public class PieWatchFace {
         mCanvas.drawLine(mWatchFaceCenter.x, mWatchFaceCenter.y, nowPoint.x, nowPoint.y, mDialPaint);
 
         // drawing center dot
-        mCanvas.drawCircle(mWatchFaceCenter.x, mWatchFaceCenter.y, PieUtils.getPixelsForDips(mContext, 5), mDialPaint);
+        mCanvas.drawCircle(mWatchFaceCenter.x, mWatchFaceCenter.y, PieUtils.getPixelsForDips(mContext, 5), mDotPaint);
 
         // drawing hour markers
         float markerLength = PieUtils.getPixelsForDips(mContext, 10);
@@ -344,6 +345,15 @@ public class PieWatchFace {
         mDialPaint.setAntiAlias(true);
         mDialPaint.setStrokeCap(Paint.Cap.ROUND);
         mDialPaint.setShadowLayer(10.0f, 0.0f, 2.0f, 0xFF000000);
+
+        // the brush used to paint the hour markers and current time marker
+        mDotPaint = new Paint();
+        mDotPaint.setColor(Color.parseColor("#C9C9C9"));
+        mDotPaint.setAlpha(255);
+        mDotPaint.setStrokeWidth(6.0f);
+        mDotPaint.setAntiAlias(true);
+        mDotPaint.setStrokeCap(Paint.Cap.ROUND);
+        mDotPaint.setShadowLayer(10.0f, 0.0f, 2.0f, 0xFF000000);
 
         // the brush used to paint the horizon separator
         mHorizonPaint = new Paint();
