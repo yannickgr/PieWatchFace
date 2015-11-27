@@ -79,7 +79,7 @@ public class PieWatchFace {
 
         drawEvents();
 
-//        drawHorizon();
+        drawHorizon();
 
         drawBasicClock();
 
@@ -126,11 +126,23 @@ public class PieWatchFace {
 
         RectF floatingPointBounds = new RectF(mWatchFaceBounds);
 
-        for (CalendarEvent event : CalendarEvent.allEvents()) {
+        int nowMinutes = PieUtils.getDateInMinutes(new Date());
 
-            // draw even piece background
+        for (CalendarEvent event : CalendarEvent.allEvents()) {
             mPiePaint.setColor(event.Color);
-            mCanvas.drawArc(floatingPointBounds, event.startAngle, event.durationInDegrees, true, mPiePaint);
+
+            float nowAngle = PieUtils.getAngleForMinutes(nowMinutes);
+            int startMinutes = PieUtils.getDateInMinutes(event.Start);
+            int endMinutes = PieUtils.getDateInMinutes(event.End);
+
+            // draw piece background
+            if (nowMinutes > startMinutes && nowMinutes < endMinutes) {
+                // we are on this event
+                mCanvas.drawArc(floatingPointBounds, nowAngle, event.durationInDegrees - (nowAngle - event.startAngle), true, mPiePaint);
+            } else {
+                // normal future event
+                mCanvas.drawArc(floatingPointBounds, event.startAngle, event.durationInDegrees, true, mPiePaint);
+            }
 
             // draw event text
             double radius = mWatchFaceBounds.width() / 2;

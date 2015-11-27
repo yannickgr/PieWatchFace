@@ -34,6 +34,10 @@ public class PieUtils {
         return minutes * 0.5f;
     }
 
+    public static float getAngleForMinutes(int mins) {
+        return getAngleForDate(mins, true);
+    }
+
     public static float getAngleForDate(Date date, boolean takeArcDrawingOffsetIntoAccount) {
         int minutes = getDateInMinutes(date);
         return getAngleForDate(minutes, takeArcDrawingOffsetIntoAccount);

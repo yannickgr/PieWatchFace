@@ -136,8 +136,8 @@ public class CalendarEvent {
         end.set(Calendar.SECOND, 0);
         events.add(new CalendarEvent(1, "Lunch at this restaurant", start.getTime(), end.getTime(), 0, "Chipotle", false, android.graphics.Color.parseColor("#009688")));
 
-        start.set(Calendar.HOUR_OF_DAY, 14);
-        start.set(Calendar.MINUTE, 0);
+        start.set(Calendar.HOUR_OF_DAY, 13);
+        start.set(Calendar.MINUTE, 30);
         start.set(Calendar.SECOND, 0);
         end.set(Calendar.HOUR_OF_DAY, 15);
         end.set(Calendar.MINUTE, 0);
@@ -167,6 +167,7 @@ public class CalendarEvent {
         end.set(Calendar.MINUTE, 30);
         end.set(Calendar.SECOND, 0);
         events.add(new CalendarEvent(1, "Skype call with people on MARS", start.getTime(), end.getTime(), 0, "La Place", false, android.graphics.Color.parseColor("#ee6161")));
+
         return events;
     }
 
