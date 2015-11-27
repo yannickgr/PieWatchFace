@@ -328,6 +328,8 @@ public class PieWatchFace {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStrokeCap(Paint.Cap.ROUND);
         mTextPaint.setTextSize(24);
+        Typeface plain = Typeface.create("sans-serif-condensed", Typeface.NORMAL);
+        mTextPaint.setTypeface(plain);
 
         // the brush used to paint the time left till next event piece
         mTimeLeftTextPaint = new Paint(mTextPaint);
