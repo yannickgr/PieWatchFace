@@ -134,25 +134,43 @@ public class PieWatchFace {
             Point endPoint = PieUtils.getPointOnTheCircleCircumference(radius, event.endAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             Point startPoint = PieUtils.getPointOnTheCircleCircumference(radius, event.startAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
 
+            // title text
+            Path eventTitlePath = new Path();
             float titleTextVOffset;
             float titleTextHOffset;
 
-            Path eventTitlePath = new Path();
-
             if (event.drawTitleOnStartingEdge) {
-                mTextPaint.setTextAlign(Paint.Align.RIGHT);
-                eventTitlePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
-                eventTitlePath.lineTo(endPoint.x, endPoint.y);
-
-                titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
-                titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
+                if ((event.startAngle >= 270 && event.startAngle <= 360) || (event.startAngle >= 0 && event.startAngle < 90)) {
+                    // drawing text on the starting edge when you're on the first half of circle
+                    mTextPaint.setTextAlign(Paint.Align.RIGHT);
+                    eventTitlePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
+                    eventTitlePath.lineTo(startPoint.x, startPoint.y);
+                    titleTextVOffset = PieUtils.getPixelsForDips(mContext, 15);
+                    titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
+                } else {
+                    // drawing text on the starting edge when you're on the second half of circle
+                    mTextPaint.setTextAlign(Paint.Align.LEFT);
+                    eventTitlePath.moveTo(startPoint.x, startPoint.y);
+                    eventTitlePath.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
+                    titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
+                    titleTextHOffset = PieUtils.getPixelsForDips(mContext, 5);
+                }
             } else {
-                mTextPaint.setTextAlign(Paint.Align.LEFT);
-                eventTitlePath.moveTo(startPoint.x, startPoint.y);
-                eventTitlePath.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
-
-                titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
-                titleTextHOffset = PieUtils.getPixelsForDips(mContext, 5);
+                if (event.endAngle >= 90 && event.endAngle < 270) {
+                    // drawing text on the ending edge when you're on the second half of circle
+                    eventTitlePath.moveTo(endPoint.x, endPoint.y);
+                    eventTitlePath.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
+                    mTextPaint.setTextAlign(Paint.Align.LEFT);
+                    titleTextVOffset = PieUtils.getPixelsForDips(mContext, 15);
+                    titleTextHOffset = PieUtils.getPixelsForDips(mContext, 5);
+                } else {
+                    // drawing text on the ending edge when you're on the first half of circle
+                    eventTitlePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
+                    eventTitlePath.lineTo(endPoint.x, endPoint.y);
+                    mTextPaint.setTextAlign(Paint.Align.RIGHT);
+                    titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
+                    titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
+                }
             }
 
             mCanvas.drawTextOnPath(event.Title, eventTitlePath, titleTextHOffset, titleTextVOffset, mTextPaint);
@@ -192,10 +210,10 @@ public class PieWatchFace {
 //            }*/
 //
 //            /*// drawing the title inside the pie piece
-//            int minimumDurationDegreesForTitle = 12;
+//            int MIN_DEG_FOR_TITLE = 12;
 //
 //            // draw Text
-//            if (duration >= minimumDurationDegreesForTitle) {
+//            if (duration >= MIN_DEG_FOR_TITLE) {
 //                Path path = new Path();
 //                Path timePath = new Path();
 //

@@ -47,7 +47,9 @@ public class CalendarEvent {
         this.durationInDegrees = PieUtils.getDegreesForMinutes(((this.End.getHours() * 60) + this.End.getMinutes()) -
                 ((this.Start.getHours() * 60) + this.Start.getMinutes()));
 
-        this.drawTitleOnStartingEdge = this.endAngle <= Pos.DIAL_6_OCLOCK.nativeInt || (this.endAngle <= Pos.DIAL_3_OCLOCK_ALT.nativeInt && this.endAngle > Pos.DIAL_12_OCLOCK.nativeInt);
+        this.drawTitleOnStartingEdge = (this.endAngle > Pos.DIAL_6_OCLOCK.nativeInt)
+                && ((this.endAngle > Pos.DIAL_3_OCLOCK_ALT.nativeInt) || (this.endAngle <= Pos.DIAL_12_OCLOCK.nativeInt))
+                && (this.startAngle != Pos.DIAL_6_OCLOCK.nativeInt);
     }
 
     @NonNull
@@ -127,7 +129,7 @@ public class CalendarEvent {
         events.add(new CalendarEvent(1, "Running", start.getTime(), end.getTime(), 0, "Outside", false, android.graphics.Color.BLUE));*/
 
         start.set(Calendar.HOUR_OF_DAY, 12);
-        start.set(Calendar.MINUTE, 0);
+        start.set(Calendar.MINUTE, 10);
         start.set(Calendar.SECOND, 0);
         end.set(Calendar.HOUR_OF_DAY, 13);
         end.set(Calendar.MINUTE, 30);
@@ -161,7 +163,7 @@ public class CalendarEvent {
         start.set(Calendar.HOUR_OF_DAY, 21);
         start.set(Calendar.MINUTE, 0);
         start.set(Calendar.SECOND, 0);
-        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.HOUR_OF_DAY, 22);
         end.set(Calendar.MINUTE, 30);
         end.set(Calendar.SECOND, 0);
         events.add(new CalendarEvent(1, "Skype call", start.getTime(), end.getTime(), 0, "La Place", false, android.graphics.Color.parseColor("#ee6161")));
