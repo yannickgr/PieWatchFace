@@ -181,8 +181,8 @@ public class PieWatchFace {
                 }
             }
 
-            int[] colors = {Color.WHITE, Color.TRANSPARENT};
-            float[] positions = {0.6f, 0.9f};
+            int[] colors = {Color.WHITE, event.Color, Color.TRANSPARENT};
+            float[] positions = {0.6f, 0.8f, 0.8f};
             LinearGradient textGradient = new LinearGradient(edgePoint.x, edgePoint.y, mWatchFaceCenter.x, mWatchFaceCenter.y, colors, positions, Shader.TileMode.MIRROR);
             mTextPaint.setShader(textGradient);
 
