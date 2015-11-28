@@ -25,6 +25,7 @@ public class PieWatchFace {
 
     public static final String TAG = PieWatchFace.class.getSimpleName();
 
+    public static final int MIN_DEG_FOR_TITLE = 12; // min degrees required for the title to be displayed on the pie piece
 
     private Context mContext;
 
@@ -129,25 +130,31 @@ public class PieWatchFace {
         int nowMinutes = PieUtils.getDateInMinutes(new Date());
 
         for (CalendarEvent event : CalendarEvent.allEvents()) {
-            mPiePaint.setColor(event.Color);
+            mPiePaint.setColor(event.displayColor);
 
             float nowAngle = PieUtils.getAngleForMinutes(nowMinutes);
-            int startMinutes = PieUtils.getDateInMinutes(event.Start);
-            int endMinutes = PieUtils.getDateInMinutes(event.End);
+            int startMinutes = PieUtils.getDateInMinutes(event.startDate);
+            int endMinutes = PieUtils.getDateInMinutes(event.endDate);
+
+            float eventDuration = event.durationInDegrees;
+
+            double radius = mWatchFaceBounds.width() / 2;
+
+            // start and end points for the piece
+            Point startPoint;
+            Point endPoint = PieUtils.getPointOnTheCircleCircumference(radius, event.endAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
 
             // draw piece background
             if (nowMinutes > startMinutes && nowMinutes < endMinutes) {
                 // we are on this event
-                mCanvas.drawArc(floatingPointBounds, nowAngle, event.durationInDegrees - (nowAngle - event.startAngle), true, mPiePaint);
+                eventDuration = event.durationInDegrees - (nowAngle - event.startAngle);
+                mCanvas.drawArc(floatingPointBounds, nowAngle, eventDuration, true, mPiePaint);
+                startPoint = PieUtils.getPointOnTheCircleCircumference(radius, nowAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             } else {
                 // normal future event
-                mCanvas.drawArc(floatingPointBounds, event.startAngle, event.durationInDegrees, true, mPiePaint);
+                mCanvas.drawArc(floatingPointBounds, event.startAngle, eventDuration, true, mPiePaint);
+                startPoint = PieUtils.getPointOnTheCircleCircumference(radius, event.startAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             }
-
-            // draw event text
-            double radius = mWatchFaceBounds.width() / 2;
-            Point endPoint = PieUtils.getPointOnTheCircleCircumference(radius, event.endAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
-            Point startPoint = PieUtils.getPointOnTheCircleCircumference(radius, event.startAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
 
             // title text
             Path eventTitlePath = new Path();
@@ -155,159 +162,97 @@ public class PieWatchFace {
             float titleTextHOffset;
             Point edgePoint;
 
+            // time path
+            Path eventTimePath = new Path();
+            float timePathVOffset;
+            float timePathHOffset;
+
             if (event.drawTitleOnStartingEdge) {
                 edgePoint = startPoint;
 
                 if ((event.startAngle >= 270 && event.startAngle <= 360) || (event.startAngle >= 0 && event.startAngle < 90)) {
-                    // drawing text on the starting edge when you're on the first half of circle
+                    // drawing text on the starting edge when you're in the first half of circle
                     mTextPaint.setTextAlign(Paint.Align.RIGHT);
                     eventTitlePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
                     eventTitlePath.lineTo(edgePoint.x, edgePoint.y);
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, 15);
                     titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
+
+                    // drawing time text on the ending edge when you're in the first half of circle
+                    mTimeLeftTextPaint.setTextAlign(Paint.Align.RIGHT);
+                    eventTimePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
+                    eventTimePath.lineTo(endPoint.x, endPoint.y);
+
+                    timePathVOffset = PieUtils.getPixelsForDips(mContext, 15);
+                    timePathHOffset = PieUtils.getPixelsForDips(mContext, 5);
                 } else {
-                    // drawing text on the starting edge when you're on the second half of circle
+                    // drawing text on the starting edge when you're in the second half of circle
                     mTextPaint.setTextAlign(Paint.Align.LEFT);
                     eventTitlePath.moveTo(edgePoint.x, edgePoint.y);
                     eventTitlePath.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
                     titleTextHOffset = PieUtils.getPixelsForDips(mContext, 5);
+
+                    // drawing time text on the ending edge when you're in the second half of circle
+                    mTimeLeftTextPaint.setTextAlign(Paint.Align.LEFT);
+                    eventTimePath.moveTo(endPoint.x, endPoint.y);
+                    eventTimePath.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
+
+                    timePathVOffset = PieUtils.getPixelsForDips(mContext, 15);
+                    timePathHOffset = PieUtils.getPixelsForDips(mContext, 7);
                 }
             } else {
                 edgePoint = endPoint;
 
                 if (event.endAngle >= 90 && event.endAngle < 270) {
-                    // drawing text on the ending edge when you're on the second half of circle
+                    // drawing text on the ending edge when you're in the second half of circle
                     eventTitlePath.moveTo(edgePoint.x, edgePoint.y);
                     eventTitlePath.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
                     mTextPaint.setTextAlign(Paint.Align.LEFT);
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, 15);
                     titleTextHOffset = PieUtils.getPixelsForDips(mContext, 5);
+
+                    // drawing time text on the starting edge when you're in the second half of circle
+                    mTimeLeftTextPaint.setTextAlign(Paint.Align.RIGHT);
+                    eventTimePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
+                    eventTimePath.lineTo(startPoint.x, startPoint.y);
+
+                    timePathVOffset = PieUtils.getPixelsForDips(mContext, 15);
+                    timePathHOffset = PieUtils.getPixelsForDips(mContext, 5);
                 } else {
-                    // drawing text on the ending edge when you're on the first half of circle
+                    // drawing text on the ending edge when you're in the first half of circle
                     eventTitlePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
                     eventTitlePath.lineTo(edgePoint.x, edgePoint.y);
                     mTextPaint.setTextAlign(Paint.Align.RIGHT);
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
                     titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
+
+                    // drawing time text on the starting edge when you're in the first half of circle
+                    mTimeLeftTextPaint.setTextAlign(Paint.Align.RIGHT);
+                    eventTimePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
+                    eventTimePath.lineTo(startPoint.x, startPoint.y);
+
+                    timePathVOffset = PieUtils.getPixelsForDips(mContext, 15);
+                    timePathHOffset = PieUtils.getPixelsForDips(mContext, -7);
                 }
             }
 
-            int[] colors = {Color.WHITE, event.Color, Color.TRANSPARENT};
+            int[] colors = {Color.WHITE, event.displayColor, Color.TRANSPARENT};
             float[] positions = {0.6f, 0.8f, 0.8f};
             LinearGradient textGradient = new LinearGradient(edgePoint.x, edgePoint.y, mWatchFaceCenter.x, mWatchFaceCenter.y, colors, positions, Shader.TileMode.MIRROR);
             mTextPaint.setShader(textGradient);
 
-            mCanvas.drawTextOnPath(event.Title, eventTitlePath, titleTextHOffset, titleTextVOffset, mTextPaint);
+            if (eventDuration > MIN_DEG_FOR_TITLE)
+                mCanvas.drawTextOnPath(event.title, eventTitlePath, titleTextHOffset, titleTextVOffset, mTextPaint);
+
+            CalendarEvent nxt = CalendarEvent.nextEvent;
+            boolean canDrawNextEventInTime = nxt != null && nxt.equals(event) && eventDuration > (MIN_DEG_FOR_TITLE * 2);
+            if (canDrawNextEventInTime)
+                mCanvas.drawTextOnPath(event.getInTimeString(), eventTimePath
+                        , timePathHOffset
+                        , timePathVOffset
+                        , mTimeLeftTextPaint);
         }
-
-
-//        double radius = mWatchFaceBounds.width() / 2;
-//
-//        int nowMinutes = PieUtils.getDateInMinutes(new Date());
-//
-//        // assume the start is the current time
-//        float baselineAngle = mCurrentAngle;
-//
-//        // looping through the stored events
-//        for (CalendarEvent event : events) {
-//
-//            //TODO: for all day events, these should be added just behind the current time indicator, and be "dragged along" for the rest of the day. The downside is we lose some of our events horizon.
-//
-//            // draw background piece
-//            mPiePaint.setColor(event.Color);
-//            mCanvas.drawArc(floatingPointBounds, event.startAngle, event.durationInDegrees, true, mPiePaint);
-//
-//
-//            /*if (nowMinutes > startMinutes &&
-//                    nowMinutes < endMinutes &&
-//                    baselineAngle == mCurrentAngle) {
-//                // we are currently in progress of this event, use the start as baseline
-//                baselineAngle = startAngle;
-//
-//                // cut the duration short
-//                duration = duration - (mCurrentAngle - startAngle);
-//
-//                // drawing the pie piece from now for the rest of the duration
-//                mCanvas.drawArc(boundsF, mCurrentAngle, duration, true, mPiePaint);
-//            } else {
-//                // drawing the pie piece fully
-//            }*/
-//
-//            /*// drawing the title inside the pie piece
-//            int MIN_DEG_FOR_TITLE = 12;
-//
-//            // draw Text
-//            if (duration >= MIN_DEG_FOR_TITLE) {
-//                Path path = new Path();
-//                Path timePath = new Path();
-//
-//                Point endPoint = PieUtils.getPointOnTheCircleCircumference(radius, endAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
-//                Point startPoint = PieUtils.getPointOnTheCircleCircumference(radius, startAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
-//
-//                float titleTextVOffset;
-//                float titleTextHOffset;
-//                float timeTextVOffset;
-//                float timeTextHOffset;
-//
-//                //Log.d(TAG, "Event " + event.Title + ", start angle " + startAngle + " - end angle " + endAngle);
-//                if (endAngle <= POS_DIAL_6_OCLOCK
-//                        || (endAngle <= POS_DIAL_3_OCLOCK_ALT && endAngle > POS_DIAL_12_OCLOCK)) {
-//                    // draw the text at the end of the slice
-//                    mTextPaint.setTextAlign(Paint.Align.RIGHT);
-//                    path.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
-//                    path.lineTo(endPoint.x, endPoint.y);
-//                    titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
-//                    titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
-//
-//                    mTimeLeftTextPaint.setTextAlign(Paint.Align.RIGHT);
-//
-//                    timePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
-//                    timePath.lineTo(startPoint.x, startPoint.y);
-//
-//                    timeTextVOffset = PieUtils.getPixelsForDips(mContext, 13);
-//                    timeTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
-//
-//                } else if (endAngle <= POS_DIAL_12_OCLOCK) {
-//
-//                    // draw the text at the end of the slice
-//                    mTextPaint.setTextAlign(Paint.Align.LEFT);
-//                    path.moveTo(endPoint.x, endPoint.y);
-//                    path.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
-//                    titleTextVOffset = PieUtils.getPixelsForDips(mContext, 20);
-//                    titleTextHOffset = PieUtils.getPixelsForDips(mContext, 5);
-//
-//                    mTimeLeftTextPaint.setTextAlign(Paint.Align.LEFT);
-//
-//                    timePath.moveTo(startPoint.x, startPoint.y);
-//                    timePath.lineTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
-//
-//                    timeTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
-//                    timeTextHOffset = PieUtils.getPixelsForDips(mContext, 5);
-//
-//                } else {
-//                    // draw the text at the beginning of the slice
-//                    //mTitlePaint.setTextAlign(Paint.Align.LEFT);
-//                    //path.moveTo(startPoint.x, startPoint.y);
-//                    //path.lineTo(centerX, centerY);
-//                    Log.d(TAG, "Can't determine pie title placing. Start angle is " + startAngle + " and end angle is " + endAngle);
-//
-//                    // FIXME: 11/26/15 it would be much better to skip drawing event rather than crashing the whole app
-//                    throw new IllegalArgumentException("We do not know where to place the title of this appointment");
-//                }
-//
-//                mCanvas.drawTextOnPath(event.Title, path, titleTextHOffset, titleTextVOffset, mTextPaint);
-//
-//                // TODO: 11/26/15 stop drawing when event has started, aka 'in 0min'
-//                // TODO: 11/26/15 only draw this for next upcoming event
-//                mCanvas.drawTextOnPath("in 38min", timePath
-//                        , timeTextHOffset
-//                        , timeTextVOffset
-//                        , mTimeLeftTextPaint);
-//
-//            }*/
-//
-//        } // for each event
     }
 
     public void drawBgImage() {

@@ -77,6 +77,15 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
         }
 
         @Override
+        public void onPeekCardPositionUpdate(Rect rect) {
+            super.onPeekCardPositionUpdate(rect);
+            // if the clock is sitting in ambient mode, and a peek card notification pops up
+            // the peek card background isn't drawn properly, so here we catch the update and
+            // invalidate the current frame right away to redraw
+            invalidate();
+        }
+
+        @Override
         public void onVisibilityChanged(boolean visible) {
             super.onVisibilityChanged(visible);
 
