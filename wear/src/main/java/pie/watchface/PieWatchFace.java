@@ -129,7 +129,7 @@ public class PieWatchFace {
 
         int nowMinutes = PieUtils.getDateInMinutes(new Date());
 
-        for (CalendarEvent event : CalendarEvent.allEvents()) {
+        for (CalendarEvent event : CalendarEvent.getHardCodedEvents()) {
             mPiePaint.setColor(event.displayColor);
 
             float nowAngle = PieUtils.getAngleForMinutes(nowMinutes);
@@ -268,6 +268,7 @@ public class PieWatchFace {
     }
 
     private void drawHorizon() {
+        // FIXME: 11/28/15 this creates a totally dark piece from < 3oclock upto 3oclock
         // drawing horizon separator
         int horizonSeparatorLength = 40;
         int[] colors = {Color.TRANSPARENT, Color.BLACK};
