@@ -237,8 +237,16 @@ public class PieWatchFace {
                 }
             }
 
+
+            // variable fading for text when pie piece gets small
+            float fading_threshold = 0.8f;
+            fading_threshold = Math.min(fading_threshold, (fading_threshold / 30) * eventDuration);
+            float color_threshold = 0.6f;
+            color_threshold = Math.min(color_threshold, (color_threshold / 30) * eventDuration);
+
+            float[] positions = {color_threshold, fading_threshold, fading_threshold};
             int[] colors = {Color.WHITE, event.displayColor, Color.TRANSPARENT};
-            float[] positions = {0.6f, 0.8f, 0.8f};
+
             LinearGradient textGradient = new LinearGradient(edgePoint.x, edgePoint.y, mWatchFaceCenter.x, mWatchFaceCenter.y, colors, positions, Shader.TileMode.MIRROR);
             mTextPaint.setShader(textGradient);
 

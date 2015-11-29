@@ -248,6 +248,7 @@ public class CalendarEvent {
                 + " end: " + this.endDate.toString()
                 + " all day: " + this.isAllDay
                 + " startAngle: " + this.startAngle
-                + " endAngle: " + this.endAngle;
+                + " endAngle: " + this.endAngle
+                + " degrees duration: " + this.durationInDegrees;
     }
 }
