@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.wearable.provider.WearableCalendarContract;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -71,7 +70,12 @@ public class CalendarEvent {
     }
 
     public String getInTimeString() {
-        int mins = Math.abs(PieUtils.getDateInMinutes(this.startDate)) - PieUtils.getDateInMinutes(new Date());
+        int mins;
+        if (new Date().getHours() > 12) {
+            mins = Math.abs((12 * 60) + Math.abs(PieUtils.getDateInMinutes(this.startDate)) - PieUtils.getDateInMinutes(new Date()));
+        } else {
+            mins = Math.abs(PieUtils.getDateInMinutes(this.startDate)) - PieUtils.getDateInMinutes(new Date());
+        }
         if (mins > 60)
             return "in " + (mins / 60) + "h";
         else return "in " + mins + "m";
@@ -131,9 +135,7 @@ public class CalendarEvent {
             if (cur.getString(PROJECTION_TITLE_INDEX).contains("BOL"))
                 continue;
 
-            Log.i(TAG, "id: " + cur.getLong(PROJECTION_ID_INDEX));
-            // adding dummy events at the moment (see below)
-            events.add(new CalendarEvent(
+            CalendarEvent event = new CalendarEvent(
                     cur.getLong(PROJECTION_ID_INDEX),
                     cur.getString(PROJECTION_TITLE_INDEX),
                     new Date(cur.getLong(PROJECTION_START_INDEX)),
@@ -142,9 +144,10 @@ public class CalendarEvent {
                     cur.getString(PROJECTION_LOCATION_INDEX),
                     cur.getInt(PROJECTION_ALLDAY_INDEX) != 0,
                     0xffcd3737
-            ));
-
+            );
+//            events.add(event);
         }
+        events.addAll(getHardCodedEvents(false));
 
         cur.close();
 
@@ -166,7 +169,7 @@ public class CalendarEvent {
         int startMinutes = PieUtils.getDateInMinutes(events.get(0).startDate);
         int endMinutes = PieUtils.getDateInMinutes(events.get(0).endDate);
 
-        if (nowMinutes > startMinutes && nowMinutes < endMinutes) {
+        if (nowMinutes >= startMinutes && nowMinutes < endMinutes) {
             // if we are in middle of an ongoing event, then next event is located at position 2 in the array
             if (events.size() >= 2)
                 nextEvent = events.get(1); // this will always be true
@@ -180,57 +183,57 @@ public class CalendarEvent {
     }
 
 
-    public static List<CalendarEvent> getHardCodedEvents() {
+    public static List<CalendarEvent> getHardCodedEvents(boolean add12Hours) {
         List<CalendarEvent> events = new ArrayList<>();
 
         // Adding a bunch of hard-coded dummy events, to not always have to add events manually in the android calendar
         Calendar start = new GregorianCalendar();
         Calendar end = new GregorianCalendar();
 
-        start.set(Calendar.HOUR_OF_DAY, 6);
+        start.set(Calendar.HOUR_OF_DAY, 6 + (add12Hours ? 12 : 0));
         start.set(Calendar.MINUTE, 0);
         start.set(Calendar.SECOND, 0);
-        end.set(Calendar.HOUR_OF_DAY, 7);
-        end.set(Calendar.MINUTE, 0);
+        end.set(Calendar.HOUR_OF_DAY, 7 + (add12Hours ? 12 : 0));
+        end.set(Calendar.MINUTE, 30);
         end.set(Calendar.SECOND, 0);
         events.add(new CalendarEvent(1, "Running", start.getTime(), end.getTime(), 0, "Outside", false, android.graphics.Color.BLUE));
 
-        start.set(Calendar.HOUR_OF_DAY, 12);
-        start.set(Calendar.MINUTE, 10);
+        start.set(Calendar.HOUR_OF_DAY, 0 + (add12Hours ? 12 : 0));
+        start.set(Calendar.MINUTE, 15);
         start.set(Calendar.SECOND, 0);
-        end.set(Calendar.HOUR_OF_DAY, 13);
+        end.set(Calendar.HOUR_OF_DAY, 1 + (add12Hours ? 12 : 0));
         end.set(Calendar.MINUTE, 30);
         end.set(Calendar.SECOND, 0);
         events.add(new CalendarEvent(1, "Lunch at this restaurant", start.getTime(), end.getTime(), 0, "Chipotle", false, Color.parseColor("#009688")));
 
-        start.set(Calendar.HOUR_OF_DAY, 14);
-        start.set(Calendar.MINUTE, 00);
+        start.set(Calendar.HOUR_OF_DAY, 2 + (add12Hours ? 12 : 0));
+        start.set(Calendar.MINUTE, 0);
         start.set(Calendar.SECOND, 0);
-        end.set(Calendar.HOUR_OF_DAY, 15);
-        end.set(Calendar.MINUTE, 0);
+        end.set(Calendar.HOUR_OF_DAY, 3 + (add12Hours ? 12 : 0));
+        end.set(Calendar.MINUTE, 15);
         end.set(Calendar.SECOND, 0);
         events.add(new CalendarEvent(1, "Conference call about something", start.getTime(), end.getTime(), 0, "Room A1", false, Color.parseColor("#2196F3")));
 
-        start.set(Calendar.HOUR_OF_DAY, 15);
-        start.set(Calendar.MINUTE, 30);
+        start.set(Calendar.HOUR_OF_DAY, 3 + (add12Hours ? 12 : 0));
+        start.set(Calendar.MINUTE, 55);
         start.set(Calendar.SECOND, 0);
-        end.set(Calendar.HOUR_OF_DAY, 16);
+        end.set(Calendar.HOUR_OF_DAY, 5 + (add12Hours ? 12 : 0));
         end.set(Calendar.MINUTE, 30);
         end.set(Calendar.SECOND, 0);
         events.add(new CalendarEvent(1, "Exams Evaluation tonight", start.getTime(), end.getTime(), 0, "Room B1", false, Color.parseColor("#2196F3")));
 
-        start.set(Calendar.HOUR_OF_DAY, 17);
+        start.set(Calendar.HOUR_OF_DAY, 8 + (add12Hours ? 12 : 0));
         start.set(Calendar.MINUTE, 15);
         start.set(Calendar.SECOND, 0);
-        end.set(Calendar.HOUR_OF_DAY, 18);
+        end.set(Calendar.HOUR_OF_DAY, 9 + (add12Hours ? 12 : 0));
         end.set(Calendar.MINUTE, 30);
         end.set(Calendar.SECOND, 0);
         events.add(new CalendarEvent(1, "Dinner with Amy and John", start.getTime(), end.getTime(), 0, "La Place", false, Color.parseColor("#009688")));
 
-        start.set(Calendar.HOUR_OF_DAY, 22);
-        start.set(Calendar.MINUTE, 30);
+        start.set(Calendar.HOUR_OF_DAY, 10 + (add12Hours ? 12 : 0));
+        start.set(Calendar.MINUTE, 0);
         start.set(Calendar.SECOND, 0);
-        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.HOUR_OF_DAY, 11 + (add12Hours ? 12 : 0));
         end.set(Calendar.MINUTE, 30);
         end.set(Calendar.SECOND, 0);
         events.add(new CalendarEvent(1, "Skype call with people on MARS", start.getTime(), end.getTime(), 0, "La Place", false, Color.parseColor("#ee6161")));

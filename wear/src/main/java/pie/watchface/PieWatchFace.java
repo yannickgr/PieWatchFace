@@ -129,7 +129,7 @@ public class PieWatchFace {
 
         int nowMinutes = PieUtils.getDateInMinutes(new Date());
 
-        for (CalendarEvent event : CalendarEvent.getHardCodedEvents()) {
+        for (CalendarEvent event : CalendarEvent.allEvents(mContext)) {
             mPiePaint.setColor(event.displayColor);
 
             float nowAngle = PieUtils.getAngleForMinutes(nowMinutes);
