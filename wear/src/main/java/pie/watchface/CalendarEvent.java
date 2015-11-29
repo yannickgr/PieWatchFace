@@ -145,9 +145,9 @@ public class CalendarEvent {
                     cur.getInt(PROJECTION_ALLDAY_INDEX) != 0,
                     0xffcd3737
             );
-//            events.add(event);
+            events.add(event);
         }
-        events.addAll(getHardCodedEvents(false));
+//        events.addAll(getHardCodedEvents(false));
 
         cur.close();
 

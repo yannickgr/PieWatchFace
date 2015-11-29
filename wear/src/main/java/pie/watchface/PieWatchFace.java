@@ -25,7 +25,7 @@ public class PieWatchFace {
 
     public static final String TAG = PieWatchFace.class.getSimpleName();
 
-    public static final int MIN_DEG_FOR_TITLE = 12; // min degrees required for the title to be displayed on the pie piece
+    public static final int MIN_DEG_FOR_TITLE = 15; // min degrees required for the title to be displayed on the pie piece
 
     private Context mContext;
 
