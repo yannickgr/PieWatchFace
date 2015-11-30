@@ -15,6 +15,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.graphics.Typeface;
+import android.util.Log;
 
 import java.util.Date;
 
@@ -147,8 +148,10 @@ public class PieWatchFace {
             // draw piece background
             if (nowMinutes > startMinutes && nowMinutes < endMinutes) {
                 // we are on this event
-                eventDuration = event.durationInDegrees - (nowAngle - event.startAngle);
+                eventDuration = PieUtils.getDegreesForMinutes(endMinutes - nowMinutes);
+
                 mCanvas.drawArc(floatingPointBounds, nowAngle, eventDuration, true, mPiePaint);
+                Log.i(TAG, "evetnDuration: " + eventDuration);
                 startPoint = PieUtils.getPointOnTheCircleCircumference(radius, nowAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             } else {
                 // normal future event
