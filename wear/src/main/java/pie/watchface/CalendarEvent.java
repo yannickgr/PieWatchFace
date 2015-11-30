@@ -190,7 +190,7 @@ public class CalendarEvent {
         end.set(Calendar.HOUR_OF_DAY, 7 + (add12Hours ? 12 : 0));
         end.set(Calendar.MINUTE, 30);
         end.set(Calendar.SECOND, 0);
-        events.add(new CalendarEvent(1, "Running", start.getTime(), end.getTime(), 0, "Outside", false, Color.BLUE));
+        events.add(new CalendarEvent(1, "Running", start.getTime(), end.getTime(), 0, "Outside", false, Color.parseColor("#ee6161")));
 
         start.set(Calendar.HOUR_OF_DAY, 0 + (add12Hours ? 12 : 0));
         start.set(Calendar.MINUTE, 15);

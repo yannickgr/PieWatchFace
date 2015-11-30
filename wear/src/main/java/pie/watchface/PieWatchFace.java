@@ -159,6 +159,19 @@ public class PieWatchFace {
                 startPoint = PieUtils.getPointOnTheCircleCircumference(radius, event.startAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             }
 
+
+            // calculate initial text gradient (subject to change, later down the road)
+
+            // variable fading for text when pie piece gets small
+            float fading_threshold = 0.8f;
+            fading_threshold = Math.min(fading_threshold, (fading_threshold / 30) * eventDuration);
+            float color_threshold = 0.6f;
+            color_threshold = Math.min(color_threshold, (color_threshold / 30) * eventDuration);
+
+            float[] positions = {color_threshold, fading_threshold, fading_threshold};
+            int[] colors = {Color.WHITE, event.displayColor, Color.TRANSPARENT};
+            LinearGradient textGradient;
+
             // title text
             Path eventTitlePath = new Path();
             float titleTextVOffset;
@@ -173,6 +186,8 @@ public class PieWatchFace {
             if (event.drawTitleOnStartingEdge) {
                 edgePoint = startPoint;
 
+                textGradient = new LinearGradient(edgePoint.x, edgePoint.y, mWatchFaceCenter.x, mWatchFaceCenter.y, colors, positions, Shader.TileMode.MIRROR);
+
                 if ((event.startAngle >= 270 && event.startAngle <= 360) || (event.startAngle >= 0 && event.startAngle < 90)) {
                     // drawing text on the starting edge when you're in the first half of circle
                     mTextPaint.setTextAlign(Paint.Align.RIGHT);
@@ -181,13 +196,23 @@ public class PieWatchFace {
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, 15);
                     titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
 
+                    float measureText = mTextPaint.measureText(event.title);
+                    if (measureText > 170) {
+                        mTextPaint.setTextAlign(Paint.Align.LEFT);
+                        titleTextHOffset = PieUtils.getPixelsForDips(mContext, 28);
+
+                        // invert the text gradient
+                        positions = new float[]{0.8f, 1.f, 1.f};
+                        textGradient = new LinearGradient(mWatchFaceCenter.x, mWatchFaceCenter.y, edgePoint.x, edgePoint.y, colors, positions, Shader.TileMode.MIRROR);
+                    }
+
                     // drawing time text on the ending edge when you're in the first half of circle
                     mTimeLeftTextPaint.setTextAlign(Paint.Align.RIGHT);
                     eventTimePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
                     eventTimePath.lineTo(endPoint.x, endPoint.y);
 
-                    timePathVOffset = PieUtils.getPixelsForDips(mContext, 15);
-                    timePathHOffset = PieUtils.getPixelsForDips(mContext, 5);
+                    timePathVOffset = PieUtils.getPixelsForDips(mContext, -5);
+                    timePathHOffset = PieUtils.getPixelsForDips(mContext, -5);
                 } else {
                     // drawing text on the starting edge when you're in the second half of circle
                     mTextPaint.setTextAlign(Paint.Align.LEFT);
@@ -206,6 +231,8 @@ public class PieWatchFace {
                 }
             } else {
                 edgePoint = endPoint;
+
+                textGradient = new LinearGradient(edgePoint.x, edgePoint.y, mWatchFaceCenter.x, mWatchFaceCenter.y, colors, positions, Shader.TileMode.MIRROR);
 
                 if (event.endAngle >= 90 && event.endAngle < 270) {
                     // drawing text on the ending edge when you're in the second half of circle
@@ -230,6 +257,16 @@ public class PieWatchFace {
                     titleTextVOffset = PieUtils.getPixelsForDips(mContext, -5);
                     titleTextHOffset = PieUtils.getPixelsForDips(mContext, -5);
 
+                    float measureText = mTextPaint.measureText(event.title);
+                    if (measureText > 170) {
+                        mTextPaint.setTextAlign(Paint.Align.LEFT);
+                        titleTextHOffset = PieUtils.getPixelsForDips(mContext, 28);
+
+                        // invert the text gradient
+                        positions = new float[]{0.8f, 1.f, 1.f};
+                        textGradient = new LinearGradient(mWatchFaceCenter.x, mWatchFaceCenter.y, edgePoint.x, edgePoint.y, colors, positions, Shader.TileMode.MIRROR);
+                    }
+
                     // drawing time text on the starting edge when you're in the first half of circle
                     mTimeLeftTextPaint.setTextAlign(Paint.Align.RIGHT);
                     eventTimePath.moveTo(mWatchFaceCenter.x, mWatchFaceCenter.y);
@@ -240,17 +277,6 @@ public class PieWatchFace {
                 }
             }
 
-
-            // variable fading for text when pie piece gets small
-            float fading_threshold = 0.8f;
-            fading_threshold = Math.min(fading_threshold, (fading_threshold / 30) * eventDuration);
-            float color_threshold = 0.6f;
-            color_threshold = Math.min(color_threshold, (color_threshold / 30) * eventDuration);
-
-            float[] positions = {color_threshold, fading_threshold, fading_threshold};
-            int[] colors = {Color.WHITE, event.displayColor, Color.TRANSPARENT};
-
-            LinearGradient textGradient = new LinearGradient(edgePoint.x, edgePoint.y, mWatchFaceCenter.x, mWatchFaceCenter.y, colors, positions, Shader.TileMode.MIRROR);
             mTextPaint.setShader(textGradient);
 
             if (eventDuration > MIN_DEG_FOR_TITLE)
