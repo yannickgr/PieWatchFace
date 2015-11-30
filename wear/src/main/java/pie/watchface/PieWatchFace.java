@@ -15,9 +15,9 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.graphics.Typeface;
-import android.util.Log;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by ghans on 11/24/15.
@@ -52,11 +52,13 @@ public class PieWatchFace {
     private boolean mAmbientMode;
     private float mCurrentAngle;
     private PointF mWatchFaceCenter;
+    private List<CalendarEvent> mAllCalendarEvents;
 
 
     public PieWatchFace(Context context) {
         this.mContext = context;
         createPaintBrushes();
+        fetchCalendarEvents();
     }
 
     public void draw(Canvas canvas, Rect watchFaceBounds, Rect peekCardBounds, boolean ambientMode) {
@@ -92,7 +94,6 @@ public class PieWatchFace {
 
         int width = mWatchFaceBounds.width();
         int height = mWatchFaceBounds.height();
-
         double radius = width / 2;
 
         // drawing current time indicator
@@ -112,13 +113,12 @@ public class PieWatchFace {
 
     private void drawPeekCardBounds(Rect peekCardBounds) {
         if (mAmbientMode) {
-            Paint bgPaint = new Paint();
-            bgPaint.setColor(Color.BLACK);
-            mCanvas.drawRect(peekCardBounds, bgPaint);
+            Paint paint = new Paint();
+            paint.setColor(Color.BLACK);
+            mCanvas.drawRect(peekCardBounds, paint);
 
-            Paint linePaint = new Paint();
-            linePaint.setColor(Color.WHITE);
-            mCanvas.drawLine(peekCardBounds.left, peekCardBounds.top, peekCardBounds.right, peekCardBounds.top, linePaint);
+            paint.setColor(Color.WHITE);
+            mCanvas.drawLine(peekCardBounds.left, peekCardBounds.top, peekCardBounds.right, peekCardBounds.top, paint);
         }
     }
 
@@ -129,17 +129,15 @@ public class PieWatchFace {
         RectF floatingPointBounds = new RectF(mWatchFaceBounds);
 
         int nowMinutes = PieUtils.getDateInMinutes(new Date());
+        float nowAngle = PieUtils.getAngleForMinutes(nowMinutes);
+        double radius = mWatchFaceBounds.width() / 2;
 
-        for (CalendarEvent event : CalendarEvent.allEvents(mContext)) {
+        for (CalendarEvent event : mAllCalendarEvents) {
             mPiePaint.setColor(event.displayColor);
 
-            float nowAngle = PieUtils.getAngleForMinutes(nowMinutes);
             int startMinutes = PieUtils.getDateInMinutes(event.startDate);
             int endMinutes = PieUtils.getDateInMinutes(event.endDate);
-
             float eventDuration = event.durationInDegrees;
-
-            double radius = mWatchFaceBounds.width() / 2;
 
             // start and end points for the piece
             Point startPoint;
@@ -151,7 +149,6 @@ public class PieWatchFace {
                 eventDuration = PieUtils.getDegreesForMinutes(endMinutes - nowMinutes);
 
                 mCanvas.drawArc(floatingPointBounds, nowAngle, eventDuration, true, mPiePaint);
-                Log.i(TAG, "evetnDuration: " + eventDuration);
                 startPoint = PieUtils.getPointOnTheCircleCircumference(radius, nowAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             } else {
                 // normal future event
@@ -318,6 +315,13 @@ public class PieWatchFace {
                 , horizonSeparatorLength
                 , true
                 , mHorizonPaint);
+    }
+
+    /**
+     * Updates the calendar events, usually should be called once every minute
+     */
+    public void fetchCalendarEvents() {
+        this.mAllCalendarEvents = CalendarEvent.allEvents(mContext);
     }
 
     private void createPaintBrushes() {

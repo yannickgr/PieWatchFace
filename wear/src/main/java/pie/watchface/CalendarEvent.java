@@ -176,7 +176,6 @@ public class CalendarEvent {
         return events;
     }
 
-
     public static List<CalendarEvent> getHardCodedEvents(boolean add12Hours) {
         List<CalendarEvent> events = new ArrayList<>();
 

@@ -55,6 +55,7 @@ public class PieWatchFaceService extends CanvasWatchFaceService {
         @Override
         public void onTimeTick() {
             super.onTimeTick();
+            mWatchFace.fetchCalendarEvents();
             invalidate();
         }
 
