@@ -22,9 +22,6 @@ public class PieUtils {
         int minutes = date.getMinutes();
         int hours = date.getHours();
 
-        if (hours > 12) {
-            hours = hours - 12;
-        }
         minutes = minutes + (hours * 60);
 
         return minutes;
@@ -40,6 +37,9 @@ public class PieUtils {
 
     public static float getAngleForDate(Date date, boolean takeArcDrawingOffsetIntoAccount) {
         int minutes = getDateInMinutes(date);
+
+        if (minutes >= 720) minutes -= 720;
+
         return getAngleForDate(minutes, takeArcDrawingOffsetIntoAccount);
     }
 

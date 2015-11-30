@@ -70,14 +70,8 @@ public class CalendarEvent {
     }
 
     public String getInTimeString() {
-        int mins;
-        if (new Date().getHours() > 12) {
-            mins = Math.abs((12 * 60) + Math.abs(PieUtils.getDateInMinutes(this.startDate)) - PieUtils.getDateInMinutes(new Date()));
-        } else {
-            mins = Math.abs(PieUtils.getDateInMinutes(this.startDate)) - PieUtils.getDateInMinutes(new Date());
-        }
-        if (mins > 60)
-            return "in " + (mins / 60) + "h";
+        int mins = Math.abs(PieUtils.getDateInMinutes(this.startDate)) - PieUtils.getDateInMinutes(new Date());
+        if (mins > 60) return "in " + (mins / 60) + "h";
         else return "in " + mins + "m";
     }
 
