@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -15,6 +16,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.graphics.Typeface;
+import android.util.Log;
 
 import java.util.Date;
 import java.util.List;
@@ -302,16 +304,38 @@ public class PieWatchFace {
     }
 
     private void drawHorizon() {
-        // FIXME: 11/28/15 this creates a totally dark piece from < 3oclock upto 3oclock
-        // drawing horizon separator
         int horizonSeparatorLength = 40;
         int[] colors = {Color.TRANSPARENT, Color.BLACK};
-        float[] positions = {(mCurrentAngle - horizonSeparatorLength) / 360f, mCurrentAngle / 360f};
+
+        // find out at what angle the gradient needs to start
+        float startAngle = (mCurrentAngle - horizonSeparatorLength);
+
+        // if we the start is negative, it means we'll have to "go around"
+        if (startAngle < 0) startAngle += 360;
+
+        // the gradient starts at the beginning of the sweep, but has to end at the defined horizon separator length
+        float[] positions = {0, horizonSeparatorLength / 360f};
         SweepGradient horizonGradient = new SweepGradient(mWatchFaceCenter.x, mWatchFaceCenter.y, colors, positions);
+
+        // the sweep gradient doesn't like drawing starting from a value before the 0 point (3 o clock) to after,
+        // that's why we need a "local" matrix for the gradient, which we can first rotate to always have our start be 0
+        Matrix gradientMatrix = new Matrix();
+
+        // we'll rotate one degree back, because for some reason there is a weird striped border at the start,
+        // which we do not want to see.
+        float rotateAngle = startAngle - 1;
+        if (rotateAngle < 0) rotateAngle += 360;
+
+        // do the actual rotate and assign the matrix to the gradient
+        gradientMatrix.preRotate(rotateAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
+        horizonGradient.setLocalMatrix(gradientMatrix);
+
+        // assign the gradient shader to the horizon
         mHorizonPaint.setShader(horizonGradient);
 
+        // draw the horizon arc
         mCanvas.drawArc(new RectF(mWatchFaceBounds)
-                , mCurrentAngle - horizonSeparatorLength
+                , startAngle
                 , horizonSeparatorLength
                 , true
                 , mHorizonPaint);
