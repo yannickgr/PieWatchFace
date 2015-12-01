@@ -124,8 +124,6 @@ public class PieWatchFace {
     }
 
     private void drawEvents() {
-        if (mAmbientMode)
-            return;
 
         RectF floatingPointBounds = new RectF(mWatchFaceBounds);
 
@@ -155,16 +153,16 @@ public class PieWatchFace {
             // draw piece background
             if (nowMinutes > startMinutes && nowMinutes < endMinutes) {
                 // we are on this event
+                eventStartAngle = nowAngle;
                 eventDuration = PieUtils.getDegreesForMinutes(endMinutes - nowMinutes);
-
-                mCanvas.drawArc(floatingPointBounds, nowAngle, eventDuration, true, mPiePaint);
                 startPoint = PieUtils.getPointOnTheCircleCircumference(radius, nowAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             } else {
                 // normal future event
-                mCanvas.drawArc(floatingPointBounds, eventStartAngle, eventDuration, true, mPiePaint);
                 startPoint = PieUtils.getPointOnTheCircleCircumference(radius, eventStartAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             }
 
+            if (!mAmbientMode)
+                mCanvas.drawArc(floatingPointBounds, eventStartAngle, eventDuration, true, mPiePaint);
 
             // calculate initial text gradient (subject to change, later down the road)
 
@@ -174,8 +172,13 @@ public class PieWatchFace {
             float color_threshold = 0.6f;
             color_threshold = Math.min(color_threshold, (color_threshold / 30) * eventDuration);
 
+            if (mAmbientMode) {
+                color_threshold = 0.7f;
+                fading_threshold = 0.9f;
+            }
+
             float[] positions = {color_threshold, fading_threshold, fading_threshold};
-            int[] colors = {Color.WHITE, event.displayColor, Color.TRANSPARENT};
+            int[] colors = {Color.WHITE, mAmbientMode ? Color.TRANSPARENT : event.displayColor, Color.TRANSPARENT};
             LinearGradient textGradient;
 
             // title text
@@ -285,12 +288,12 @@ public class PieWatchFace {
 
             mTextPaint.setShader(textGradient);
 
-            if (eventDuration > MIN_DEG_FOR_TITLE)
+            if (mAmbientMode || eventDuration > MIN_DEG_FOR_TITLE)
                 mCanvas.drawTextOnPath(event.title, eventTitlePath, titleTextHOffset, titleTextVOffset, mTextPaint);
 
             CalendarEvent nxt = CalendarEvent.nextEvent;
-            boolean canDrawNextEventInTime = nxt != null && nxt.equals(event) && eventDuration > (MIN_DEG_FOR_TITLE * 2);
-            if (canDrawNextEventInTime)
+            boolean canDrawNextEventInTime = nxt != null && nxt.equals(event);
+            if (!mAmbientMode && canDrawNextEventInTime && eventDuration > (MIN_DEG_FOR_TITLE * 2))
                 mCanvas.drawTextOnPath(event.getInTimeString(), eventTimePath
                         , timePathHOffset
                         , timePathVOffset
@@ -311,6 +314,9 @@ public class PieWatchFace {
     }
 
     private void drawHorizon() {
+        if (mAmbientMode)
+            return;
+
         int horizonSeparatorLength = 40;
         int[] colors = {Color.TRANSPARENT, Color.BLACK};
 
