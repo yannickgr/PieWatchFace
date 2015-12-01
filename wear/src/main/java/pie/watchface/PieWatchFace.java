@@ -16,7 +16,6 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.graphics.Typeface;
-import android.util.Log;
 
 import java.util.Date;
 import java.util.List;
@@ -134,12 +133,20 @@ public class PieWatchFace {
         float nowAngle = PieUtils.getAngleForMinutes(nowMinutes);
         double radius = mWatchFaceBounds.width() / 2;
 
-        for (CalendarEvent event : mAllCalendarEvents) {
+        for (int i = 0; i < mAllCalendarEvents.size(); i++) {
+            CalendarEvent event = mAllCalendarEvents.get(i);
             mPiePaint.setColor(event.displayColor);
+
 
             int startMinutes = PieUtils.getDateInMinutes(event.startDate);
             int endMinutes = PieUtils.getDateInMinutes(event.endDate);
             float eventDuration = event.durationInDegrees;
+
+            if (i > 0 && event.startDate.compareTo(mAllCalendarEvents.get(i - 1).startDate) == 0) {
+                startMinutes += 20;
+            }
+
+            float eventStartAngle = PieUtils.getAngleForMinutes(startMinutes);
 
             // start and end points for the piece
             Point startPoint;
@@ -154,8 +161,8 @@ public class PieWatchFace {
                 startPoint = PieUtils.getPointOnTheCircleCircumference(radius, nowAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             } else {
                 // normal future event
-                mCanvas.drawArc(floatingPointBounds, event.startAngle, eventDuration, true, mPiePaint);
-                startPoint = PieUtils.getPointOnTheCircleCircumference(radius, event.startAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
+                mCanvas.drawArc(floatingPointBounds, eventStartAngle, eventDuration, true, mPiePaint);
+                startPoint = PieUtils.getPointOnTheCircleCircumference(radius, eventStartAngle, mWatchFaceCenter.x, mWatchFaceCenter.y);
             }
 
 
